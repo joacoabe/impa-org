@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-contacto template-form-landing{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+    {% if page.texto_gracias %}
+    <div class="mensaje-gracias rich-text">{{ page.texto_gracias|richtext }}</div>
+    {% else %}
+    <p>Gracias por tu mensaje. Te responderemos a la brevedad.</p>
+    {% endif %}
+</article>
+{% endblock %}

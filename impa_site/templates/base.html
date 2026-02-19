@@ -1,0 +1,86 @@
+{% load static wagtailcore_tags wagtailuserbar home_tags %}
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            {% block title %}
+            {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+            {% endblock %}
+            {% block title_suffix %}
+            {% wagtail_site as current_site %}
+            {% if current_site and current_site.site_name %} · {{ current_site.site_name }}{% endif %}
+            {% endblock %}
+        </title>
+        {% if page.search_description %}
+        <meta name="description" content="{{ page.search_description }}" />
+        {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="{% static 'images/logo-impa.png' %}" />
+
+        {% if request.in_preview_panel %}
+        <base target="_blank">
+        {% endif %}
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/impa_site.css' %}">
+        {% block extra_css %}
+        {% endblock %}
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+        {% wagtailuserbar %}
+
+        <header class="site-header">
+            <div class="site-header__inner">
+                <a href="/" class="site-logo">
+                    <img class="site-logo__img" src="{% static 'images/logo-impa.png' %}" alt="IMPA" />
+                    <span>IMPA</span>
+                </a>
+                <nav class="site-nav-wrap" aria-label="Principal">
+                    <ul class="site-nav">
+                        <li><a href="/">Inicio</a></li>
+                        {% for item in site_nav %}
+                        <li><a href="{% pageurl item %}">{{ item.title }}</a></li>
+                        {% endfor %}
+                        <li class="site-nav__sep" aria-hidden="true"></li>
+                        <li><a href="https://imparg.org/webmail/" class="site-nav__util" target="_blank" rel="noopener noreferrer">Webmail</a></li>
+                        <li><a href="https://imparg.org/intranet/" class="site-nav__util" target="_blank" rel="noopener noreferrer">Intranet</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <nav class="site-tabs" aria-label="Secciones">
+            <div class="site-tabs__inner">
+                <ul class="site-tabs__list">
+                    {% for item in site_tabs %}
+                    {% pageurl item as tab_url %}
+                    <li class="site-tabs__item">
+                        <a href="{% pageurl item %}" class="site-tabs__link {% if request.path|path_startswith:tab_url %}site-tabs__link--active{% endif %}">{{ item.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="site-footer">
+            <div class="site-footer__inner">
+                <p class="site-footer__accesos">
+                    <a href="https://imparg.org/webmail/" target="_blank" rel="noopener noreferrer">Webmail</a>
+                    <span class="site-footer__sep">·</span>
+                    <a href="https://imparg.org/intranet/" target="_blank" rel="noopener noreferrer">Intranet</a>
+                </p>
+                <p class="site-footer__copy">© {% now "Y" %} IMPA. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+
+        <script type="text/javascript" src="{% static 'js/impa_site.js' %}"></script>
+        {% block extra_js %}
+        {% endblock %}
+    </body>
+</html>

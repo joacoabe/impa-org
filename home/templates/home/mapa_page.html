@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-mapa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+.mapa-leaflet { height: 520px; width: 100%; border-radius: 8px; }
+.mapa-iglesia-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #2c5282;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.leaflet-popup-content-wrapper { border-radius: 8px; }
+.leaflet-popup-content .mapa-popup-titulo { font-weight: 700; margin: 0 0 0.25em 0; font-size: 1.05em; }
+.leaflet-popup-content .mapa-popup-direccion { color: #555; margin: 0.25em 0; font-size: 0.9em; }
+.leaflet-popup-content .mapa-popup-pastor { margin: 0.25em 0 0 0; font-size: 0.9em; }
+.leaflet-popup-content .mapa-popup-link { margin-top: 0.5em; display: inline-block; font-size: 0.85em; }
+.mapa-sin-datos { margin-top: 1rem; color: #555; font-size: 0.95em; }
+</style>
+{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+
+    {% if page.iframe_url %}
+    <div class="mapa-embed">
+        <iframe src="{{ page.iframe_url }}" title="{{ page.title }}" width="100%" height="500" style="border:0;" allowfullscreen loading="lazy"></iframe>
+    </div>
+    {% elif page.embed_code %}
+    <div class="mapa-embed">
+        {{ page.embed_code|safe }}
+    </div>
+    {% else %}
+    <div id="map" class="mapa-leaflet" aria-label="Mapa de iglesias de la misión"></div>
+    {{ iglesias|json_script:"iglesias-data" }}
+    {% if not iglesias %}
+    <p class="mapa-sin-datos">No hay iglesias con ubicación GPS cargada. Añadí <strong>latitud</strong> y <strong>longitud</strong> en cada ficha de iglesia (Admin → Iglesias).</p>
+    {% endif %}
+    {% endif %}
+</article>
+{% endblock %}
+
+{% block extra_js %}
+{% if not page.iframe_url and not page.embed_code %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function() {
+    var dataEl = document.getElementById('iglesias-data');
+    var iglesias = dataEl ? JSON.parse(dataEl.textContent) : [];
+    // Centro Argentina (aproximado)
+    var map = L.map('map').setView([-38.4, -63.6], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    // Icono de iglesia (no la gota por defecto)
+    var churchIcon = L.divIcon({
+        className: 'mapa-iglesia-marker',
+        html: '<span class="mapa-iglesia-icon" aria-hidden="true">⛪</span>',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+    });
+    iglesias.forEach(function(ig) {
+        var popupContent = '<div class="mapa-popup">';
+        popupContent += '<p class="mapa-popup-titulo">' + escapeHtml(ig.title) + '</p>';
+        if (ig.direccion || ig.ciudad) {
+            popupContent += '<p class="mapa-popup-direccion">' + escapeHtml([ig.direccion, ig.ciudad].filter(Boolean).join(', ')) + '</p>';
+        }
+        if (ig.pastor_nombre) {
+            popupContent += '<p class="mapa-popup-pastor">Pastor: ' + escapeHtml(ig.pastor_nombre) + '</p>';
+        }
+        if (ig.url) {
+            popupContent += '<a class="mapa-popup-link" href="' + escapeAttr(ig.url) + '">Ver ficha de la iglesia</a>';
+        }
+        popupContent += '</div>';
+        L.marker([ig.lat, ig.lng], { icon: churchIcon })
+            .addTo(map)
+            .bindPopup(popupContent);
+    });
+    function escapeHtml(s) {
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+    }
+    function escapeAttr(s) {
+        return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+})();
+</script>
+{% endif %}
+{% endblock %}

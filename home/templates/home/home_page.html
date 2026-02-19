@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block content %}
+{% with carousel_blocks=page.carousel %}
+{% if carousel_blocks %}
+<section class="home-carousel" aria-label="Carrusel">
+  <div class="home-carousel__inner">
+    <button type="button" class="home-carousel__btn home-carousel__btn--prev" aria-label="Anterior">‹</button>
+    <button type="button" class="home-carousel__btn home-carousel__btn--next" aria-label="Siguiente">›</button>
+    <div class="home-carousel__track">
+      {% for block in carousel_blocks %}
+      {% if block.value %}
+      <div class="home-carousel__slide">
+        {% image block.value fill-1400x550 class="home-carousel__img" %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <div class="home-carousel__dots" aria-hidden="true"></div>
+  </div>
+</section>
+{% endif %}
+{% endwith %}
+
+<section class="home-noticias">
+  <div class="home-noticias__inner">
+    <h2 class="home-noticias__titulo">Últimas noticias</h2>
+    {% with noticias=page.get_ultimas_noticias %}
+    {% if noticias %}
+    <ul class="home-noticias__grid">
+      {% for noticia in noticias %}
+      <li class="home-noticias__card">
+        <a href="{% pageurl noticia %}" class="home-noticias__link">
+          {% if noticia.imagen_destacada %}
+          <span class="home-noticias__thumb">{% image noticia.imagen_destacada fill-400x220 class="home-noticias__img" %}</span>
+          {% else %}
+          <span class="home-noticias__thumb home-noticias__thumb--placeholder"><span class="home-noticias__placeholder">Sin imagen</span></span>
+          {% endif %}
+          <span class="home-noticias__content">
+            <strong class="home-noticias__title">{{ noticia.title }}</strong>
+            <span class="home-noticias__meta">{{ noticia.date|date:"d/m/Y" }}{% if noticia.autor %} · {{ noticia.autor }}{% endif %}</span>
+            {% if noticia.intro %}<span class="home-noticias__intro">{{ noticia.intro|richtext|truncatewords_html:15 }}</span>{% endif %}
+          </span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="home-noticias__more"><a href="/noticias/">Ver todas las noticias</a></p>
+    {% else %}
+    <p class="home-noticias__empty">No hay noticias publicadas aún.</p>
+    {% endif %}
+    {% endwith %}
+  </div>
+</section>
+
+<div class="home-main">
+  <div class="home-intro intro">
+    {% if page.intro %}
+    <div class="rich-text">{{ page.intro|richtext }}</div>
+    {% endif %}
+  </div>
+
+  {% if page.body %}
+  <div class="home-body">
+    {% for block in page.body %}
+      {% include_block block %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% if page.carousel %}
+<script>
+(function() {
+  var track = document.querySelector('.home-carousel__track');
+  if (!track) return;
+  var slides = track.querySelectorAll('.home-carousel__slide');
+  var n = slides.length;
+  if (n <= 1) return;
+  var idx = 0;
+  function goTo(i) {
+    idx = (i % n + n) % n;
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+    var dots = document.querySelectorAll('.home-carousel__dot');
+    dots.forEach(function(d, j) { d.classList.toggle('home-carousel__dot--active', j === idx); });
+  }
+  document.querySelector('.home-carousel__btn--prev').addEventListener('click', function() { goTo(idx - 1); });
+  document.querySelector('.home-carousel__btn--next').addEventListener('click', function() { goTo(idx + 1); });
+  for (var d = 0; d < n; d++) {
+    var dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'home-carousel__dot' + (d === 0 ? ' home-carousel__dot--active' : '');
+    dot.setAttribute('aria-label', 'Ir a imagen ' + (d + 1));
+    (function(j) { dot.addEventListener('click', function() { goTo(j); }); })(d);
+    document.querySelector('.home-carousel__dots').appendChild(dot);
+  }
+  var autoplay = setInterval(function() { goTo(idx + 1); }, 5000);
+  track.closest('.home-carousel').addEventListener('mouseenter', function() { clearInterval(autoplay); });
+})();
+</script>
+{% endif %}
+{% endblock content %}

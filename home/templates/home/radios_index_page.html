@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-radios-index{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+    {% if page.intro %}
+    <div class="intro rich-text">{{ page.intro|richtext }}</div>
+    {% endif %}
+
+    {% if stream_radios %}
+    <section class="radios-list stream-radios">
+        <h2>Radios en vivo</h2>
+        <ul>
+            {% for r in stream_radios %}
+            <li class="radio-stream-item">
+                <strong>{{ r.nombre_display }}</strong>
+                <span class="radio-meta">{% if r.currently_playing %} — {{ r.currently_playing }}{% endif %}</span>
+                <div class="radio-links">
+                    <a href="{{ r.stream_url }}" target="_blank" rel="noopener">Escuchar MP3</a>
+                    <a href="{{ r.stream_url }}.m3u" target="_blank" rel="noopener">M3U</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if page.live_children %}
+    <section class="radios-list cms-radios">
+        <h2>Radios (páginas)</h2>
+        <ul>
+            {% for radio in page.live_children %}
+            <li><a href="{% pageurl radio %}">{{ radio.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if not stream_radios and not page.live_children %}
+    <section class="radios-list">
+        <p>No hay radios disponibles.</p>
+    </section>
+    {% endif %}
+</article>
+{% endblock %}

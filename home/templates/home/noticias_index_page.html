@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-noticias-index{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+    {% if page.intro %}
+    <div class="intro rich-text">{{ page.intro|richtext }}</div>
+    {% endif %}
+
+    <section class="noticias-list">
+        <ul class="noticias-items">
+            {% for noticia in page.get_noticias %}
+            <li class="noticia-item">
+                <a href="{% pageurl noticia %}">
+                    <strong>{{ noticia.title }}</strong>
+                    <span class="meta"> — {{ noticia.date|date:"d/m/Y" }}{% if noticia.autor %} · {{ noticia.autor }}{% endif %}</span>
+                </a>
+                {% if noticia.intro %}<p class="resumen">{{ noticia.intro|richtext|truncatewords_html:25 }}</p>{% endif %}
+            </li>
+            {% empty %}
+            <li>No hay noticias publicadas.</li>
+            {% endfor %}
+        </ul>
+    </section>
+</article>
+{% endblock %}

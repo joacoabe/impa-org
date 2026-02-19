@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-iglesias-index{% endblock %}
+
+{% block extra_css %}
+<style>
+.iglesias-por-provincia { margin-top: 1rem; }
+.iglesias-provincia { margin-bottom: 0.5rem; }
+.iglesias-provincia summary {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    background: #f0f4f8;
+    border-radius: 6px;
+    font-weight: 600;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.iglesias-provincia summary::-webkit-details-marker { display: none; }
+.iglesias-provincia summary::after {
+    content: "▼";
+    font-size: 0.7em;
+    opacity: 0.7;
+    transition: transform 0.2s;
+}
+.iglesias-provincia[open] summary::after { transform: rotate(-180deg); }
+.iglesias-provincia ul {
+    margin: 0;
+    padding: 0.5rem 1rem 1rem 1.5rem;
+    list-style: none;
+    border-left: 3px solid #e2e8f0;
+    margin-left: 0.5rem;
+}
+.iglesias-provincia li { margin: 0.35rem 0; }
+.iglesias-provincia a {
+    text-decoration: none;
+    color: #2c5282;
+}
+.iglesias-provincia a:hover { text-decoration: underline; }
+.iglesias-provincia .ciudad { color: #718096; font-weight: normal; }
+.iglesias-list-empty { color: #718096; margin-top: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+    {% if page.intro %}
+    <div class="intro rich-text">{{ page.intro|richtext }}</div>
+    {% endif %}
+
+    <section class="iglesias-list" aria-label="Listado de iglesias por provincia">
+        {% if iglesias_por_provincia %}
+        <div class="iglesias-por-provincia">
+            {% for provincia, iglesias in iglesias_por_provincia %}
+            <details class="iglesias-provincia" open>
+                <summary>{{ provincia }} ({{ iglesias|length }})</summary>
+                <ul>
+                    {% for iglesia in iglesias %}
+                    <li>
+                        <a href="{% pageurl iglesia %}">
+                            {{ iglesia.title }}{% if iglesia.ciudad %}<span class="ciudad"> — {{ iglesia.ciudad }}</span>{% endif %}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </details>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="iglesias-list-empty">No hay iglesias publicadas. Podés cargarlas desde la intranet con <code>python manage.py sync_churches_from_intranet</code> (configurando <code>INTRANET_CHURCHES_API_URL</code>) o crearlas en el Admin → Iglesias.</p>
+        {% endif %}
+    </section>
+</article>
+{% endblock %}

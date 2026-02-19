@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-recurso{% endblock %}
+
+{% block content %}
+<article class="recurso-detalle">
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+
+    {% if page.descripcion %}
+    <div class="descripcion rich-text">{{ page.descripcion|richtext }}</div>
+    {% endif %}
+
+    {% if page.tipo == "documento" and page.documento %}
+    <p class="descarga"><a href="{{ page.documento.url }}" download>Descargar documento</a></p>
+    {% endif %}
+
+    {% if page.tipo == "imagen" and page.imagen %}
+    <figure>{% image page.imagen max-800x600 %}</figure>
+    {% endif %}
+
+    {% if page.tipo == "documento" and not page.documento %}
+    <p>No hay documento asociado.</p>
+    {% endif %}
+    {% if page.tipo == "imagen" and not page.imagen %}
+    <p>No hay imagen asociada.</p>
+    {% endif %}
+</article>
+{% endblock %}

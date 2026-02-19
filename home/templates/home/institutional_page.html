@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-institutional template-institutional-{{ page.tipo }}{% endblock %}
+
+{% block content %}
+<article class="institutional">
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+
+    {% if page.tipo == "autoridades" and autoridades %}
+    <div class="autoridades-list">
+        {% for aut in autoridades %}
+        <section class="autoridad {% if forloop.first %}autoridad--actual{% endif %}">
+            <div class="autoridad__foto">
+                {% if aut.foto %}
+                    {% image aut.foto fill-200x250 as img %}
+                    <img src="{{ img.url }}" alt="{{ aut.nombre }}" width="{{ img.width }}" height="{{ img.height }}" />
+                {% else %}
+                    <div class="autoridad__foto-placeholder" aria-hidden="true">Foto</div>
+                {% endif %}
+            </div>
+            <div class="autoridad__content">
+                {% if forloop.first %}<p class="autoridad__badge">Obispo actual</p>{% endif %}
+                <h2 class="autoridad__nombre">{{ aut.nombre }}</h2>
+                {% if aut.periodo %}<p class="autoridad__periodo">{{ aut.periodo }}</p>{% endif %}
+                {% if aut.descripcion %}<div class="autoridad__descripcion">{{ aut.descripcion|richtext }}</div>{% endif %}
+            </div>
+        </section>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if page.body %}
+    <div class="institutional-body">
+        {% for block in page.body %}
+            {% include_block block %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</article>
+{% endblock %}

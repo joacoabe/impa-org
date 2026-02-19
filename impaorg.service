@@ -1,0 +1,18 @@
+[Unit]
+Description=IMPA Wagtail (imparg.org)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=joacoabe
+Group=joacoabe
+WorkingDirectory=/home/impa/impa
+Environment=DJANGO_SETTINGS_MODULE=impa_site.settings.production
+Environment=PORT=5010
+EnvironmentFile=-/home/impa/impa/.env
+ExecStart=/home/impa/impa/impa/bin/gunicorn impa_site.wsgi:application --bind 0.0.0.0:5010 --workers 2 --threads 2
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

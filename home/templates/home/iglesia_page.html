@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-iglesia{% endblock %}
+
+{% block content %}
+<article class="iglesia-ficha">
+    <header>
+        <h1>{{ page.title }}</h1>
+    </header>
+
+    <section class="ubicacion">
+        <h2>Ubicación y horarios</h2>
+        {% if page.direccion %}<p class="direccion">{{ page.direccion }}</p>{% endif %}
+        {% if page.ciudad or page.provincia %}
+        <p>{% if page.ciudad %}{{ page.ciudad }}{% endif %}{% if page.ciudad and page.provincia %}, {% endif %}{% if page.provincia %}{{ page.provincia }}{% endif %}</p>
+        {% endif %}
+        {% if page.horarios %}<div class="horarios rich-text">{{ page.horarios|richtext }}</div>{% endif %}
+    </section>
+
+    {% if page.mostrar_contacto_publicamente and page.pastor_nombre %}
+    <section class="contacto">
+        <h2>Pastor / contacto</h2>
+        <p>{{ page.pastor_nombre }}{% if page.pastor_email %} — <a href="mailto:{{ page.pastor_email }}">{{ page.pastor_email }}</a>{% endif %}{% if page.pastor_telefono %} — {{ page.pastor_telefono }}{% endif %}</p>
+    </section>
+    {% endif %}
+
+    {% if page.redes %}
+    <section class="redes">
+        <h2>Redes</h2>
+        <ul>
+            {% for block in page.redes %}
+            <li><a href="{{ block.value.url }}" target="_blank" rel="noopener">{{ block.value.label }}</a></li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if page.mapa_url %}
+    <section class="mapa">
+        <h2>Mapa</h2>
+        <p><a href="{{ page.mapa_url }}" target="_blank" rel="noopener">Ver en el mapa</a></p>
+    </section>
+    {% endif %}
+</article>
+{% endblock %}
