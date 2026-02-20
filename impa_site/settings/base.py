@@ -213,8 +213,10 @@ WAGTAILSEARCH_BACKENDS = {
 # Detrás de proxy HTTPS: confiar en X-Forwarded-Proto para que request.is_secure() y las URLs sean https
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# CSRF: permitir login y formularios desde imparg.org (dev y production)
+# CSRF: permitir login y formularios desde impa.ar e imparg.org (dev y production)
 CSRF_TRUSTED_ORIGINS = [
+    "https://impa.ar",
+    "https://www.impa.ar",
     "https://imparg.org",
     "https://www.imparg.org",
     "http://localhost:5010",

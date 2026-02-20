@@ -9,6 +9,8 @@ if not SECRET_KEY:
 
 # Hosts permitidos: dominio público + IP del servidor (por si entran por IP) + con puerto
 _default_hosts = (
+    "impa.ar,www.impa.ar,"
+    "impa.ar:443,www.impa.ar:443,"
     "imparg.org,www.imparg.org,"
     "imparg.org:443,www.imparg.org:443,"
     "localhost,127.0.0.1,192.168.1.51,179.43.113.10,"

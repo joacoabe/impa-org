@@ -15,12 +15,12 @@ class LogHostMiddleware:
         if proto and "," in proto:
             request.META["HTTP_X_FORWARDED_PROTO"] = proto.split(",")[0].strip()
             proto = request.META["HTTP_X_FORWARDED_PROTO"]
-        # En imparg.org el sitio se sirve siempre por HTTPS. Si el proxy no reenvía
+        # En impa.ar e imparg.org el sitio se sirve siempre por HTTPS. Si el proxy no reenvía
         # X-Forwarded-Proto (o envía "http"), las URLs absolutas salen en http:// y
-        # el navegador bloquea (Mixed Content). Forzamos https para este dominio.
+        # el navegador bloquea (Mixed Content). Forzamos https para estos dominios.
         if host:
             host_clean = host.split(":")[0].lower()
-            if host_clean in ("imparg.org", "www.imparg.org"):
+            if host_clean in ("impa.ar", "www.impa.ar", "imparg.org", "www.imparg.org"):
                 request.META["HTTP_X_FORWARDED_PROTO"] = "https"
         # Si no hay Referer pero el Host es nuestro, añadimos Referer para que CSRF no devuelva 403
         # (p. ej. al abrir el sitio desde un enlace externo o por IP que no envía Referer)

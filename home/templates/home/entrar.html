@@ -7,29 +7,33 @@
 {% block content %}
 <article class="entrar">
     <h1>Entrar</h1>
-    <p class="entrar__intro">Elegí cómo querés acceder:</p>
+    <p class="entrar__intro">Elegí cómo querés acceder al sitio de IMPA.</p>
 
     <div class="entrar__opciones">
-        <section class="entrar__card">
-            <h2>Panel de administración</h2>
-            <p>Para editar el contenido general del sitio: páginas institucionales, noticias, recursos, iglesias (fichas), etc.</p>
-            <p><a href="/admin/" class="button">Ir al panel de administración</a></p>
-            <p class="entrar__nota">Usa tu usuario y contraseña del <strong>panel de administración</strong> (no el de la intranet).</p>
+        <section class="entrar__card" aria-labelledby="entrar-admin-title">
+            <h2 id="entrar-admin-title">Panel de administración</h2>
+            <p>Para editar el contenido general del sitio: páginas institucionales, noticias, recursos y fichas de iglesias.</p>
+            <p class="entrar__card-actions">
+                <a href="/admin/" class="button">Ir al panel de administración</a>
+            </p>
+            <p class="entrar__nota">Usá tu usuario y contraseña del <strong>panel de administración</strong> (no el de la intranet).</p>
         </section>
 
-        <section class="entrar__card">
-            <h2>Sitio de las iglesias</h2>
-            <p>Para editar la <strong>página propia de cada iglesia</strong> (contenido que ve la gente en «Ver sitio web de la iglesia»).</p>
+        <section class="entrar__card" aria-labelledby="entrar-iglesias-title">
+            <h2 id="entrar-iglesias-title">Sitio de las iglesias</h2>
+            <p>Para editar la <strong>página propia de cada iglesia</strong> (el contenido que se ve en «Ver sitio web de la iglesia»).</p>
             {% if intranet_user %}
             <p class="entrar__logueado">Estás entrado como <strong>{{ intranet_user.full_name|default:intranet_user.usuario }}</strong>.</p>
-            <p>
+            <p class="entrar__card-actions">
                 <a href="{% url 'home:auth_intranet' %}" class="button">Cambiar usuario</a>
                 <a href="{% url 'home:auth_intranet_logout' %}" class="button button--secondary">Cerrar sesión</a>
             </p>
-            <p><a href="/iglesias/">Ver listado de iglesias para editar</a></p>
+            <p class="entrar__link-list"><a href="/iglesias/">Ver listado de iglesias para editar</a></p>
             {% else %}
-            <p><a href="{% url 'home:auth_intranet' %}" class="button">Entrar con la intranet</a></p>
-            <p class="entrar__nota">Usa tu <strong>usuario y contraseña de la intranet</strong> (el mismo que en imparg.org/intranet).</p>
+            <p class="entrar__card-actions">
+                <a href="{% url 'home:auth_intranet' %}" class="button">Entrar con la intranet</a>
+            </p>
+            <p class="entrar__nota">Usá tu <strong>usuario y contraseña de la intranet</strong> (el mismo que en impa.ar/intranet).</p>
             {% endif %}
         </section>
     </div>

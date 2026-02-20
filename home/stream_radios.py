@@ -9,8 +9,8 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Optional
 
-# URLs públicas para los enlaces de reproducción (el usuario debe poder escuchar desde imparg.org)
-STREAM_PUBLIC_BASE = "https://imparg.org/stream"
+# Base relativa para enlaces de reproducción (mismo dominio: impa.ar o imparg.org)
+STREAM_PUBLIC_BASE = "/stream"
 
 # URLs para obtener el status (probar interna primero si la VM no alcanza imparg.org)
 _STREAM_STATUS_CANDIDATES = [
@@ -44,7 +44,7 @@ def obtener_radios_stream(timeout: int = 15) -> list[RadioStream]:
     """
     Consulta la página de status de Icecast y devuelve la lista de radios.
     Prueba primero la URL interna (192.168.1.40) y luego la pública.
-    Los enlaces de reproducción siempre usan https://imparg.org/stream/
+    Los enlaces de reproducción usan path relativo /stream/ (mismo dominio que el sitio).
 
     Returns:
         Lista de RadioStream con los datos de cada punto de emisión.
