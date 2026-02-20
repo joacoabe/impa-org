@@ -424,6 +424,47 @@ body {
   text-decoration: underline;
 }
 
+/* Botones (uso en Entrar, Auth intranet, iglesia sitio) */
+.button,
+button.button {
+  display: inline-block;
+  padding: 0.65rem 1.5rem;
+  background-color: var(--impa-teal);
+  color: var(--impa-white) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  line-height: 1.4;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
+}
+
+.button:hover,
+button.button:hover {
+  background-color: var(--impa-teal-dark);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+}
+
+.button--secondary,
+button.button--secondary {
+  background-color: var(--impa-white);
+  color: var(--impa-gray-700) !important;
+  border: 2px solid var(--impa-gray-300);
+}
+
+.button--secondary:hover,
+button.button--secondary:hover {
+  background-color: var(--impa-gray-100);
+  border-color: var(--impa-teal);
+  color: var(--impa-teal-dark) !important;
+  box-shadow: none;
+}
+
 /* Rich text (Wagtail) */
 .rich-text {
   margin-bottom: 1rem;
@@ -702,23 +743,29 @@ body {
   text-decoration: underline;
 }
 
-/* Página Entrar (acceso unificado) */
+/* ----- Página Entrar (acceso unificado) ----- */
+.template-entrar .main-content {
+  padding-top: 2.5rem;
+  padding-bottom: 3rem;
+}
+
 .entrar {
-  max-width: var(--impa-max-width);
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 var(--impa-spacing);
 }
 
 .entrar__intro {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
   color: var(--impa-gray-700);
+  line-height: 1.5;
 }
 
 .entrar__opciones {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  margin-top: 1.5rem;
+  margin-top: 0;
 }
 
 @media (max-width: 640px) {
@@ -728,21 +775,38 @@ body {
 }
 
 .entrar__card {
-  padding: 1.25rem;
+  padding: 1.75rem;
   border: 1px solid var(--impa-gray-300);
-  border-radius: var(--impa-radius);
-  background: var(--impa-gray-100);
+  border-radius: 12px;
+  background: var(--impa-white);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.entrar__card:hover {
+  border-color: var(--impa-teal);
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.12);
 }
 
 .entrar__card h2 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 1.25rem;
-  color: var(--impa-teal-dark);
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--impa-black);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--impa-teal);
 }
 
 .entrar__card p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: var(--impa-gray-700);
+  line-height: 1.5;
+}
+
+.entrar__card .entrar__card-actions {
+  margin-top: 1.25rem;
+  margin-bottom: 0;
 }
 
 .entrar__card .button {
@@ -751,13 +815,172 @@ body {
 }
 
 .entrar__nota {
-  font-size: 0.9rem;
-  color: var(--impa-gray-600, var(--impa-gray-700));
+  font-size: 0.875rem;
+  color: var(--impa-gray-500);
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--impa-gray-200, var(--impa-gray-300));
 }
 
 .entrar__logueado {
   font-size: 0.95rem;
   color: var(--impa-teal-dark);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.entrar__card .entrar__link-list {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+}
+
+/* ----- Página Iniciar sesión Intranet ----- */
+.template-auth-intranet .main-content {
+  padding: 3rem var(--impa-spacing) 4rem;
+  background: linear-gradient(180deg, var(--impa-gray-100) 0%, var(--impa-white) 100%);
+  min-height: 50vh;
+}
+
+.auth-intranet {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0;
+  background: var(--impa-white);
+  border: 1px solid var(--impa-gray-300);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.auth-intranet__header {
+  background: linear-gradient(135deg, var(--impa-teal) 0%, var(--impa-teal-dark) 100%);
+  color: var(--impa-white);
+  padding: 1.75rem 2rem;
+  text-align: center;
+}
+
+.auth-intranet__header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--impa-white);
+  border: none;
+  padding: 0;
+}
+
+.auth-intranet__body {
+  padding: 2rem 2rem 2.25rem;
+}
+
+.auth-intranet__body > p {
+  margin: 0 0 1.5rem;
+  color: var(--impa-gray-700);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.auth-intranet__error {
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #b91c1c;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.auth-intranet-form .form-group {
+  margin-bottom: 1.35rem;
+}
+
+.auth-intranet-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--impa-gray-900);
+  letter-spacing: 0.01em;
+}
+
+.auth-intranet-form .form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 2px solid var(--impa-gray-300);
+  border-radius: 10px;
+  background: var(--impa-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: var(--impa-gray-900);
+}
+
+.auth-intranet-form .form-control::placeholder {
+  color: var(--impa-gray-500);
+}
+
+.auth-intranet-form .form-control:focus {
+  outline: none;
+  border-color: var(--impa-teal);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.18);
+}
+
+.auth-intranet-form .button,
+.auth-intranet-form button.button {
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-right: 0;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.05rem;
+}
+
+.auth-intranet-form .button:hover,
+.auth-intranet-form button.button:hover {
+  transform: translateY(-1px);
+}
+
+.auth-intranet__token-option {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--impa-gray-300);
+}
+
+.auth-intranet__token-option summary {
+  font-weight: 600;
+  color: var(--impa-teal-dark);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.25rem 0;
+}
+
+.auth-intranet__token-option summary:hover {
+  color: var(--impa-teal);
+}
+
+.auth-intranet__token-option p {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.9rem;
+  color: var(--impa-gray-700);
+}
+
+.auth-intranet__back {
+  margin-top: 2rem;
+  margin-bottom: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--impa-gray-300);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.auth-intranet__back a {
+  color: var(--impa-teal);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-intranet__back a:hover {
+  text-decoration: underline;
 }
 
 /* Utilidades */
