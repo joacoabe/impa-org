@@ -1,19 +1,39 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags l10n home_tags %}
 
 {% block body_class %}template-iglesia{% endblock %}
+
+{% block extra_css %}
+{% if page.latitud and page.longitud %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>.iglesia-ficha .mapa-embed { height: 280px; width: 100%; border-radius: 8px; margin-top: 0.75rem; }</style>
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <article class="iglesia-ficha">
     <header>
         <h1>{{ page.title }}</h1>
+        <p class="iglesia-ficha__links">
+            <a href="{% url 'home:iglesia_sitio' slug=page.slug %}">Ver sitio web de la iglesia</a>
+            {% can_edit_iglesia_site as puede_editar %}
+            {% if puede_editar %}
+            <span class="iglesia-ficha__sep">·</span>
+            <a href="{% url 'home:iglesia_sitio_editar' slug=page.slug %}" class="iglesia-ficha__editar">Editar sitio de esta iglesia</a>
+            {% else %}
+            <span class="iglesia-ficha__sep">·</span>
+            <a href="{% url 'home:auth_intranet' %}?next={% url 'home:iglesia_sitio_editar' slug=page.slug %}" class="iglesia-ficha__editar">Editar sitio (entrar con la intranet)</a>
+            {% endif %}
+        </p>
     </header>
 
     <section class="ubicacion">
         <h2>Ubicación y horarios</h2>
-        {% if page.direccion %}<p class="direccion">{{ page.direccion }}</p>{% endif %}
-        {% if page.ciudad or page.provincia %}
-        <p>{% if page.ciudad %}{{ page.ciudad }}{% endif %}{% if page.ciudad and page.provincia %}, {% endif %}{% if page.provincia %}{{ page.provincia }}{% endif %}</p>
+        {% if page.direccion or page.ciudad or page.provincia %}
+        <p class="direccion">{% if page.direccion %}{{ page.direccion }}{% endif %}{% if page.direccion and page.ciudad %}, {% endif %}{% if page.ciudad %}{{ page.ciudad }}{% endif %}{% if page.ciudad and page.provincia %}, {% endif %}{% if page.provincia %}{{ page.provincia }}{% endif %}</p>
+        {% endif %}
+        {% if page.latitud and page.longitud %}
+        <div id="mapa-iglesia" class="mapa-embed" aria-label="Mapa de ubicación" data-lat="{{ page.latitud|unlocalize }}" data-lng="{{ page.longitud|unlocalize }}"></div>
         {% endif %}
         {% if page.horarios %}<div class="horarios rich-text">{{ page.horarios|richtext }}</div>{% endif %}
     </section>
@@ -43,4 +63,24 @@
     </section>
     {% endif %}
 </article>
+{% endblock %}
+
+{% block extra_js %}
+{% if page.latitud and page.longitud %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var el = document.getElementById('mapa-iglesia');
+    if (!el) return;
+    var lat = parseFloat(el.getAttribute('data-lat'));
+    var lng = parseFloat(el.getAttribute('data-lng'));
+    if (isNaN(lat) || isNaN(lng)) return;
+    var map = L.map('mapa-iglesia').setView([lat, lng], 17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map);
+});
+</script>
+{% endif %}
 {% endblock %}

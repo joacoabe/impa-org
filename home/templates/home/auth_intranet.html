@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block body_class %}template-auth-intranet{% endblock %}
+
+{% block title %}Iniciar sesión con Intranet · IMPA{% endblock %}
+
+{% block content %}
+<article class="auth-intranet">
+    <h1>Iniciar sesión con Intranet</h1>
+    {% if error %}
+    <p class="auth-intranet__error">{{ error }}</p>
+    {% endif %}
+    <p>Para editar el sitio de una iglesia en imparg.org usá tu <strong>usuario y contraseña de la intranet</strong> (el mismo con el que entrás a la intranet).</p>
+    <form method="post" action="{% url 'home:auth_intranet' %}" class="auth-intranet-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next|default:'/' }}" />
+        <div class="form-group">
+            <label for="id_username">Usuario (intranet)</label>
+            <input type="text" name="username" id="id_username" class="form-control" value="{{ username_value|default:'' }}" autocomplete="username" autofocus />
+        </div>
+        <div class="form-group">
+            <label for="id_password">Contraseña</label>
+            <input type="password" name="password" id="id_password" class="form-control" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="button">Entrar</button>
+    </form>
+    <details class="auth-intranet__token-option">
+        <summary>O ingresar con token</summary>
+        <p>Si tenés un token de acceso (p. ej. desde un enlace &quot;Ir al sitio público&quot; de la intranet), podés pegarlo en este formulario:</p>
+        <form method="post" action="{% url 'home:auth_intranet' %}" class="auth-intranet-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next|default:'/' }}" />
+            <div class="form-group">
+                <label for="id_token">Token de acceso</label>
+                <input type="text" name="access_token" id="id_token" class="form-control" placeholder="Token..." autocomplete="off" />
+            </div>
+            <button type="submit" class="button button--secondary">Entrar con token</button>
+        </form>
+    </details>
+    <p class="auth-intranet__back"><a href="{% url 'home:entrar' %}">← Volver a Entrar</a></p>
+</article>
+{% endblock %}

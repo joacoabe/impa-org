@@ -1,6 +1,8 @@
 """Context processors para templates del sitio."""
 from wagtail.models import Site
 
+from home.intranet_auth import get_intranet_user
+
 
 # Slugs que aparecen como tabs bajo el header (orden fijo)
 TAB_SLUGS = ["iglesias", "noticias", "recursos", "radios", "contacto", "mapa"]
@@ -22,3 +24,8 @@ def site_menu(request):
         return {"site_menu": children, "site_nav": site_nav, "site_tabs": site_tabs}
     except Exception:
         return {"site_menu": [], "site_nav": [], "site_tabs": []}
+
+
+def intranet_user(request):
+    """Añade intranet_user al contexto para mostrar opciones de edición según sesión intranet."""
+    return {"intranet_user": get_intranet_user(request)}

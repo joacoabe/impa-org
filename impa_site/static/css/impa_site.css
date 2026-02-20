@@ -519,6 +519,76 @@ body {
   margin-bottom: 0.35rem;
 }
 
+.iglesia-ficha header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.iglesia-ficha__links {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+}
+
+.iglesia-ficha__links a {
+  color: var(--impa-teal);
+  text-decoration: none;
+}
+
+.iglesia-ficha__links a:hover {
+  text-decoration: underline;
+}
+
+.iglesia-ficha__sep {
+  margin: 0 0.5rem;
+  color: var(--impa-gray-500);
+}
+
+.iglesia-ficha__editar {
+  font-weight: 500;
+}
+
+/* Contenido HTML del sitio de la iglesia (editado con Quill) */
+.iglesia-sitio__html h2 {
+  font-size: 1.35rem;
+  margin: 1.25em 0 0.5em;
+  color: var(--impa-teal-dark);
+}
+.iglesia-sitio__html h3 {
+  font-size: 1.15rem;
+  margin: 1em 0 0.4em;
+  color: var(--impa-gray-900);
+}
+.iglesia-sitio__html p {
+  margin: 0 0 0.75em;
+}
+.iglesia-sitio__html ul,
+.iglesia-sitio__html ol {
+  margin: 0.5em 0 1em;
+  padding-left: 1.5em;
+}
+.iglesia-sitio__html a {
+  color: var(--impa-teal);
+  text-decoration: none;
+}
+.iglesia-sitio__html a:hover {
+  text-decoration: underline;
+}
+/* Clases que agrega el editor al centrar (persisten en el HTML guardado) */
+.iglesia-sitio__html .texto-centrado { text-align: center !important; }
+.iglesia-sitio__html .bloque-centrado { display: block !important; margin-left: auto !important; margin-right: auto !important; }
+
+.iglesia-sitio__messages {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  color: #166534;
+}
+.iglesia-sitio__message { margin: 0; }
+.iglesia-sitio__message--error { color: #b91c1c; }
+.iglesia-sitio__message--success { color: #166534; }
+
 .noticia-detalle .destacada {
   margin: 1rem 0;
 }
@@ -630,6 +700,64 @@ body {
 
 .site-footer a:hover {
   text-decoration: underline;
+}
+
+/* Página Entrar (acceso unificado) */
+.entrar {
+  max-width: var(--impa-max-width);
+  margin: 0 auto;
+  padding: 0 var(--impa-spacing);
+}
+
+.entrar__intro {
+  margin-bottom: 1.5rem;
+  color: var(--impa-gray-700);
+}
+
+.entrar__opciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .entrar__opciones {
+    grid-template-columns: 1fr;
+  }
+}
+
+.entrar__card {
+  padding: 1.25rem;
+  border: 1px solid var(--impa-gray-300);
+  border-radius: var(--impa-radius);
+  background: var(--impa-gray-100);
+}
+
+.entrar__card h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  color: var(--impa-teal-dark);
+}
+
+.entrar__card p {
+  margin-bottom: 0.75rem;
+}
+
+.entrar__card .button {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.entrar__nota {
+  font-size: 0.9rem;
+  color: var(--impa-gray-600, var(--impa-gray-700));
+}
+
+.entrar__logueado {
+  font-size: 0.95rem;
+  color: var(--impa-teal-dark);
 }
 
 /* Utilidades */

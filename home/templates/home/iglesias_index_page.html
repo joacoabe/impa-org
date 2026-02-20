@@ -57,7 +57,7 @@
         {% if iglesias_por_provincia %}
         <div class="iglesias-por-provincia">
             {% for provincia, iglesias in iglesias_por_provincia %}
-            <details class="iglesias-provincia" open>
+            <details class="iglesias-provincia">
                 <summary>{{ provincia }} ({{ iglesias|length }})</summary>
                 <ul>
                     {% for iglesia in iglesias %}

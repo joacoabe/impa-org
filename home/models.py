@@ -168,6 +168,27 @@ class IglesiaPage(Page):
     subpage_types = []
 
 
+class ChurchSiteContent(models.Model):
+    """
+    Contenido de la "página propia" de una iglesia (/iglesias/<slug>/sitio/).
+    Editable por secretaría (todas), administrador (todas) o pastor (solo su iglesia).
+    """
+    iglesia_page = models.OneToOneField(
+        IglesiaPage,
+        on_delete=models.CASCADE,
+        related_name="site_content",
+        null=False,
+        blank=False,
+    )
+    body = RichTextField(blank=True, help_text="Contenido de la página sitio de la iglesia (HTML).")
+    updated_at = models.DateTimeField(auto_now=True)
+    # updated_by se puede añadir después si se guarda usuario intranet
+
+    class Meta:
+        verbose_name = "Contenido sitio iglesia"
+        verbose_name_plural = "Contenidos sitio iglesias"
+
+
 # ---------- Fase 4: Noticias ----------
 class NoticiasIndexPage(Page):
     intro = RichTextField(blank=True)

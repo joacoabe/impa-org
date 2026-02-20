@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-iglesia-sitio-editar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.2/dist/css/grapes.min.css" />
+<style>
+.gjs-editor-wrapper {
+  display: flex;
+  border: 1px solid #94a3b8;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 500px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.gjs-blocks-panel {
+  width: 250px;
+  min-width: 250px;
+  background: #e2e8f0;
+  border-right: 1px solid #94a3b8;
+  overflow-y: auto;
+  padding: 12px;
+}
+/* Bloques: bordes discretos pero visibles */
+.gjs-blocks-panel .gjs-block {
+  min-width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 12px !important;
+  background: #fff !important;
+  border: 1px solid #0d9488 !important;
+  border-radius: 8px !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.gjs-blocks-panel .gjs-block:active { cursor: grabbing; }
+.gjs-blocks-panel .gjs-block:hover {
+  background: #f0fdfa !important;
+  border-color: #0f766e !important;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
+}
+.gjs-blocks-panel .gjs-block-title,
+.gjs-blocks-panel .gjs-block-label,
+.gjs-blocks-panel .gjs-block span,
+.gjs-blocks-panel [class*="block"] span,
+.gjs-blocks-panel .gjs-category-title { color: #0f172a !important; font-weight: 600 !important; }
+.gjs-blocks-panel .gjs-category .gjs-category-title { margin: 12px 0 6px 0; font-size: 0.85rem; color: #475569; }
+.gjs-blocks-panel .gjs-blocks-c,
+.gjs-blocks-panel [class*="blocks"] { display: block !important; visibility: visible !important; }
+.gjs-canvas-wrap { flex: 1; min-width: 0; }
+.gjs-one-bg { background-color: #f1f5f9 !important; }
+.gjs-two-bg { background-color: #fff !important; }
+/* Toolbar y botones del editor más legibles */
+.gjs-toolbar .gjs-btn,
+.gjs-toolbar-item,
+.gjs-pn-btn { color: #1e293b !important; background: #e2e8f0 !important; border: 1px solid #94a3b8 !important; }
+.gjs-toolbar .gjs-btn:hover,
+.gjs-pn-btn:hover { background: #cbd5e1 !important; color: #0f172a !important; }
+.gjs-cv-canvas { background: #fff !important; }
+.editor-pasos {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+}
+.editor-pasos__titulo { margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; color: #166534; }
+.editor-pasos__lista { margin: 0 0 0.5rem 0; padding-left: 1.25rem; color: #166534; line-height: 1.7; }
+.editor-pasos__fin { margin: 0; font-size: 0.95rem; color: #166534; }
+.gjs-blocks-panel__titulo { margin: 0 0 2px 0; font-weight: 700; font-size: 1rem; color: #0f172a; }
+.gjs-blocks-panel__sub { margin: 0 0 10px 0; font-size: 0.85rem; color: #334155; }
+.gjs-blocks-panel__fotos { margin: 12px 0 0 0; padding: 10px; font-size: 0.8rem; color: #334155; background: #fff; border-radius: 8px; border: 1px solid #94a3b8; }
+.gjs-blocks-panel__subir { margin-top: 10px; }
+.gjs-blocks-panel__subir .btn-subir-foto { display: inline-block; padding: 8px 14px; background: #0d9488; color: #fff !important; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; margin-top: 6px; }
+.gjs-blocks-panel__subir .btn-subir-foto:hover { background: #0f766e; }
+.gjs-blocks-panel__subir input[type=file] { font-size: 0.8rem; margin-top: 4px; }
+.subir-foto-msg { margin: 8px 0 0 0; font-size: 0.85rem; min-height: 1.2em; }
+.subir-foto-msg.subir-foto-msg--error { color: #b91c1c; font-weight: 600; }
+.subir-foto-msg.subir-foto-msg--ok { color: #166534; }
+.gjs-blocks-panel__link-panel { margin-top: 12px; padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #94a3b8; }
+.gjs-link-href-input { width: 100%; padding: 8px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 0.85rem; box-sizing: border-box; }
+.gjs-blocks-panel__centrar { margin-top: 12px; margin-bottom: 14px; padding: 12px; background: #f0fdfa; border-radius: 8px; border: 2px solid #0d9488; flex-shrink: 0; }
+.gjs-blocks-panel__centrar-titulo { margin: 0 0 6px 0; font-weight: 700; font-size: 1rem; color: #0f172a; }
+.gjs-blocks-panel__centrar .btn-centrar { display: block; width: 100%; margin-top: 8px; padding: 10px 14px; background: #0d9488; color: #fff !important; border: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; text-align: center; }
+.gjs-blocks-panel__centrar .btn-centrar:hover { background: #0f766e; }
+.gjs-blocks-panel__centrar .btn-centrar:first-of-type { margin-top: 0; }
+.gjs-blocks-panel__importar { margin-top: 12px; margin-bottom: 10px; }
+.gjs-blocks-panel__importar .btn-importar { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #1e293b; color: #fff !important; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+.gjs-blocks-panel__importar .btn-importar:hover { background: #334155; }
+/* Modal Importar HTML */
+.gjs-import-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+.gjs-import-modal.is-open { display: flex; }
+.gjs-import-modal__box { background: #fff; border-radius: 12px; max-width: 640px; width: 100%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.gjs-import-modal__titulo { margin: 0; padding: 16px 20px; background: #0d9488; color: #fff; font-size: 1.1rem; font-weight: 700; }
+.gjs-import-modal__body { padding: 20px; overflow: hidden; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.gjs-import-modal__body label { display: block; margin-bottom: 8px; font-weight: 600; color: #334155; }
+.gjs-import-modal__body textarea { width: 100%; min-height: 200px; padding: 12px; border: 1px solid #94a3b8; border-radius: 8px; font-family: monospace; font-size: 0.85rem; resize: vertical; box-sizing: border-box; }
+.gjs-import-modal__footer { padding: 16px 20px; background: #f1f5f9; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.gjs-import-modal__footer button { padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 0.9rem; }
+.gjs-import-modal__btn-reemplazar { background: #dc2626; color: #fff; }
+.gjs-import-modal__btn-reemplazar:hover { background: #b91c1c; }
+.gjs-import-modal__btn-agregar { background: #0d9488; color: #fff; }
+.gjs-import-modal__btn-agregar:hover { background: #0f766e; }
+.gjs-import-modal__btn-cerrar { background: #e2e8f0; color: #1e293b; }
+.gjs-import-modal__btn-cerrar:hover { background: #cbd5e1; }
+#id_body { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="iglesia-sitio-editar">
+    <header>
+        <nav class="iglesia-sitio__breadcrumb" aria-label="Navegación">
+            <a href="/iglesias/">Iglesias</a>
+            <span aria-hidden="true"> / </span>
+            <a href="{% pageurl iglesia %}">{{ iglesia.title }}</a>
+            <span aria-hidden="true"> / </span>
+            <a href="{% url 'home:iglesia_sitio' slug=iglesia.slug %}">Sitio</a>
+            <span aria-hidden="true"> / </span>
+            <span>Editar</span>
+        </nav>
+        <h1>Editar sitio de {{ iglesia.title }}</h1>
+    </header>
+
+    <form method="post" class="iglesia-sitio-form" data-subir-foto-url="{% url 'home:iglesia_sitio_subir_foto' slug=iglesia.slug %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Contenido</label>
+            <div class="editor-pasos">
+                <p class="editor-pasos__titulo">¿Cómo se usa?</p>
+                <ol class="editor-pasos__lista">
+                    <li><strong>Elegí</strong> un bloque de la lista de la izquierda (por ejemplo “Texto” o “Título”).</li>
+                    <li><strong>Arrastralo</strong> con el mouse hasta la página blanca de la derecha y soltalo.</li>
+                    <li><strong>Hacé clic</strong> en el texto que apareció para cambiarlo y escribir lo que quieras.</li>
+                    <li><strong>Centrar:</strong> seleccioná el elemento en la página y usá el botón <strong>Centrar texto</strong> o <strong>Centrar bloque</strong> (izquierda).</li>
+                    <li><strong>Enlaces:</strong> arrastrá «Enlace (link)», escribí el texto, seleccioná el enlace y en <strong>URL del enlace</strong> (izquierda) pegá la dirección real.</li>
+                    <li><strong>Importar HTML:</strong> usá el botón <strong>Importar HTML</strong> para pegar HTML (reemplazar todo o agregar al final).</li>
+                </ol>
+                <p class="editor-pasos__fin">Cuando termines, hacé clic en <strong>Guardar</strong> abajo.</p>
+            </div>
+            <div class="gjs-editor-wrapper">
+                <textarea name="body" id="id_body">{% if content %}{{ content.body }}{% endif %}</textarea>
+                <div id="gjs-blocks-panel" class="gjs-blocks-panel" data-upload-url="{% url 'home:iglesia_sitio_subir_foto' slug=iglesia.slug %}">
+                    <p class="gjs-blocks-panel__titulo">Bloques para agregar</p>
+                    <p class="gjs-blocks-panel__sub">Arrastrá cada uno a la página de la derecha →</p>
+                    <div class="gjs-blocks-panel__importar">
+                        <button type="button" class="btn-importar" id="btn-importar-html" title="Importar HTML">Importar HTML</button>
+                        <p style="margin:8px 0 0 0; font-size:0.8rem; color:#475569;">Reemplazá todo o agregá al final.</p>
+                    </div>
+                    <div class="gjs-blocks-panel__centrar">
+                        <p class="gjs-blocks-panel__centrar-titulo">Centrar elemento</p>
+                        <p style="margin:0 0 10px 0; font-size:0.85rem; color:#334155;">Clic en la página en lo que quieras centrar, después:</p>
+                        <button type="button" class="btn-centrar" id="btn-centrar-texto">Centrar texto</button>
+                        <button type="button" class="btn-centrar" id="btn-centrar-bloque">Centrar bloque (imagen, etc.)</button>
+                    </div>
+                    <div id="gjs-link-panel" class="gjs-blocks-panel__link-panel" style="display:none;">
+                        <p class="gjs-blocks-panel__centrar-titulo">URL del enlace</p>
+                        <p style="margin:0 0 6px 0; font-size:0.8rem; color:#475569;">Seleccioná un enlace en la página y pegá acá la URL:</p>
+                        <input type="url" id="gjs-link-href" placeholder="https://..." class="gjs-link-href-input">
+                    </div>
+                    <div class="gjs-blocks-panel__fotos">
+                        <strong>Subir foto desde la compu</strong><br>
+                        <label class="btn-subir-foto" for="subir-foto-input">Elegir imagen</label>
+                        <input type="file" id="subir-foto-input" accept="image/jpeg,image/png,image/gif,image/webp" style="position:absolute;width:0;height:0;opacity:0;">
+                        <p id="subir-foto-msg" class="subir-foto-msg" role="status" aria-live="polite"></p>
+                        <p style="margin:6px 0 0 0;">Hasta 5 fotos por página, 5 MB cada una (JPG, PNG, GIF, WebP).</p>
+                    </div>
+                </div>
+                <div class="gjs-canvas-wrap">
+                    <div id="gjs"></div>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">
+            <button type="submit" class="button">Guardar</button>
+            <a href="{% url 'home:iglesia_sitio' slug=iglesia.slug %}" class="button button--secondary">Cancelar</a>
+        </p>
+    </form>
+
+    <div id="gjs-import-modal" class="gjs-import-modal" aria-hidden="true">
+        <div class="gjs-import-modal__box">
+            <h2 class="gjs-import-modal__titulo">Importar HTML</h2>
+            <div class="gjs-import-modal__body">
+                <label for="gjs-import-textarea">Pegá tu HTML abajo:</label>
+                <textarea id="gjs-import-textarea" placeholder="<p>Tu contenido...</p>"></textarea>
+            </div>
+            <div class="gjs-import-modal__footer">
+                <button type="button" class="gjs-import-modal__btn-cerrar" id="gjs-import-cerrar">Cancelar</button>
+                <button type="button" class="gjs-import-modal__btn-agregar" id="gjs-import-agregar">Agregar al final</button>
+                <button type="button" class="gjs-import-modal__btn-reemplazar" id="gjs-import-reemplazar">Reemplazar todo</button>
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/grapesjs@0.21.2"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var textarea = document.getElementById('id_body');
+  if (!textarea || typeof grapesjs === 'undefined') return;
+
+  var initialContent = (textarea.value || '').trim();
+  if (!initialContent) initialContent = '<p>Arrastrá un bloque desde la izquierda y soltalo acá. Después hacé clic en el texto para editarlo.</p>';
+
+  var editor = grapesjs.init({
+    container: '#gjs',
+    height: '480px',
+    storageManager: false,
+    fromElement: false,
+    showOffsets: true,
+    noticeOnUnload: false,
+    canvas: { styles: [], scripts: [] },
+    panels: { defaults: [] },
+    blockManager: {
+      appendTo: '#gjs-blocks-panel',
+      blocks: [
+        { id: 'texto', label: 'Texto (párrafo)', content: '<p>Escribí tu párrafo aquí.</p>', category: 'Básicos' },
+        { id: 'titulo', label: 'Título grande', content: '<h2>Título</h2>', category: 'Básicos' },
+        { id: 'subtitulo', label: 'Subtítulo', content: '<h3>Subtítulo</h3>', category: 'Básicos' },
+        { id: 'lista', label: 'Lista con viñetas •', content: '<ul><li>Item 1</li><li>Item 2</li></ul>', category: 'Básicos' },
+        { id: 'lista-num', label: 'Lista numerada 1, 2, 3', content: '<ol><li>Primero</li><li>Segundo</li></ol>', category: 'Básicos' },
+        { id: 'enlace', label: 'Enlace (link)', content: '<p><a href="#" target="_blank" rel="noopener">Escribí el texto del enlace y pegá la URL abajo</a></p>', category: 'Básicos' },
+        { id: 'radio', label: 'Enlace a radio online', content: '<p><a href="https://ejemplo-radio.org/stream" target="_blank" rel="noopener">Escuchá nuestra radio en vivo</a></p>', category: 'Básicos' },
+        { id: 'separador', label: 'Línea horizontal', content: '<hr/>', category: 'Básicos' },
+        { id: 'imagen', label: 'Imagen (foto)', content: { type: 'image', attributes: { alt: 'Descripción' }, style: { maxWidth: '100%', height: 'auto' } }, category: 'Medios' }
+      ]
+    },
+    styleManager: {
+      sectors: [
+        { name: 'Texto', open: true, build: [
+          { type: 'property', property: 'color', name: 'Color' },
+          { type: 'property', property: 'font-size', name: 'Tamaño' },
+          { type: 'property', property: 'text-align', name: 'Alineación (centrar texto)' }
+        ]},
+        { name: 'Disposición', open: true, build: [
+          { type: 'property', property: 'width', name: 'Ancho' },
+          { type: 'property', property: 'margin-left', name: 'Margen izquierdo (auto = centrar)' },
+          { type: 'property', property: 'margin-right', name: 'Margen derecho (auto = centrar)' }
+        ]}
+      ]
+    },
+    deviceManager: { devices: [] }
+  });
+
+  editor.setComponents(initialContent);
+
+  var form = textarea.closest('form');
+  if (form) {
+    form.addEventListener('submit', function() {
+      var html = editor.getHtml() || '';
+      html = html.replace(/(<[a-z][a-z0-9]*)(\s[^>]*\bclass="[^"]*\btexto-centrado\b[^"]*"[^>]*)>/gi, function(m, tag, rest) {
+        if (/style\s*=/.test(rest)) return m;
+        return tag + rest + ' style="text-align:center">';
+      });
+      html = html.replace(/(<[a-z][a-z0-9]*)(\s[^>]*\bclass="[^"]*\bbloque-centrado\b[^"]*"[^>]*)>/gi, function(m, tag, rest) {
+        if (/style\s*=/.test(rest)) return m;
+        return tag + rest + ' style="display:block;margin-left:auto;margin-right:auto">';
+      });
+      textarea.value = html;
+    }, true);
+  }
+
+  function countImagesInEditor() {
+    var html = editor.getHtml() || '';
+    return (html.match(/<img\s/gi) || []).length;
+  }
+
+  var uploadUrl = (form && form.getAttribute('data-subir-foto-url')) || (document.getElementById('gjs-blocks-panel') && document.getElementById('gjs-blocks-panel').getAttribute('data-upload-url')) || '';
+  uploadUrl = (uploadUrl || '').trim();
+  if (uploadUrl && uploadUrl.indexOf('/') === 0) uploadUrl = window.location.origin + uploadUrl;
+  var subirInput = document.getElementById('subir-foto-input');
+  var csrfInput = document.querySelector('input[name=csrfmiddlewaretoken]');
+  var csrfToken = (csrfInput && csrfInput.value) || '';
+  if (!csrfToken && document.cookie) {
+    var m = document.cookie.match(/\bcsrftoken=([^;]+)/);
+    if (m) csrfToken = m[1].trim();
+  }
+
+  var subirMsg = document.getElementById('subir-foto-msg');
+  function setSubirMsg(text, isError) {
+    if (!subirMsg) return;
+    subirMsg.textContent = text || '';
+    subirMsg.className = 'subir-foto-msg' + (isError ? ' subir-foto-msg--error' : text ? ' subir-foto-msg--ok' : '');
+  }
+
+  if (subirInput) {
+    subirInput.addEventListener('change', function() {
+      var file = this.files && this.files[0];
+      this.value = '';
+      setSubirMsg('');
+      if (!file) return;
+      if (!uploadUrl) {
+        setSubirMsg('Error: no se encontró la URL de subida. Recargá la página.', true);
+        return;
+      }
+      if (countImagesInEditor() >= 5) {
+        setSubirMsg('Máximo 5 fotos por página. Eliminá una antes de agregar otra.', true);
+        return;
+      }
+      setSubirMsg('Subiendo…');
+      var fd = new FormData();
+      fd.append('foto', file);
+      fd.append('csrfmiddlewaretoken', csrfToken);
+      var opts = { method: 'POST', body: fd, credentials: 'same-origin' };
+      if (csrfToken) opts.headers = { 'X-CSRFToken': csrfToken };
+      fetch(uploadUrl, opts)
+        .then(function(r) {
+          return r.text().then(function(text) {
+            var data = null;
+            try { data = text ? JSON.parse(text) : {}; } catch (e) {}
+            return { ok: r.ok, status: r.status, data: data || {}, text: text };
+          });
+        })
+        .then(function(result) {
+          if (result.ok && result.data && result.data.url) {
+            editor.addComponents('<img src="' + result.data.url + '" alt="Imagen" style="max-width:100%;height:auto;">');
+            setSubirMsg('Listo. La imagen se agregó. Hacé clic en Guardar para que quede guardada.');
+          } else {
+            var msg = (result.data && result.data.error) || 'Error al subir la imagen.';
+            if (result.status === 403) msg = 'Sin permiso: tenés que iniciar sesión con la intranet (Entrar → Sitio de las iglesias) para subir fotos.';
+            else if (result.status === 400) msg = (result.data && result.data.error) || 'Archivo no válido. Solo JPG, PNG, GIF o WebP, máx 5 MB.';
+            else if (result.status >= 500) msg = 'Error del servidor (' + result.status + '). Probá más tarde.';
+            else if (result.status) msg = 'Error ' + result.status + ': ' + msg;
+            setSubirMsg(msg, true);
+          }
+        })
+        .catch(function() {
+          setSubirMsg('Error de conexión. Revisá la consola (F12) o probá de nuevo.', true);
+        });
+    });
+  }
+
+  var importModal = document.getElementById('gjs-import-modal');
+  var importTextarea = document.getElementById('gjs-import-textarea');
+  var btnImportar = document.getElementById('btn-importar-html');
+  var importCerrar = document.getElementById('gjs-import-cerrar');
+  var importAgregar = document.getElementById('gjs-import-agregar');
+  var importReemplazar = document.getElementById('gjs-import-reemplazar');
+
+  if (importModal && importTextarea) {
+    function openImportModal() {
+      importTextarea.value = '';
+      importModal.classList.add('is-open');
+      importModal.setAttribute('aria-hidden', 'false');
+      importTextarea.focus();
+    }
+    function closeImportModal() {
+      importModal.classList.remove('is-open');
+      importModal.setAttribute('aria-hidden', 'true');
+    }
+    if (btnImportar) btnImportar.addEventListener('click', openImportModal);
+    if (importCerrar) importCerrar.addEventListener('click', closeImportModal);
+    importModal.addEventListener('click', function(e) { if (e.target === importModal) closeImportModal(); });
+    if (importReemplazar) importReemplazar.addEventListener('click', function() {
+      var html = (importTextarea.value || '').trim();
+      if (html) editor.setComponents(html);
+      closeImportModal();
+    });
+    if (importAgregar) importAgregar.addEventListener('click', function() {
+      var html = (importTextarea.value || '').trim();
+      if (!html) { closeImportModal(); return; }
+      editor.addComponents(html);
+      if (countImagesInEditor() > 5) alert('La página no puede tener más de 5 fotos. Eliminá algunas.');
+      closeImportModal();
+    });
+  }
+
+  function getTargetComponent(comp) {
+    if (!comp) return null;
+    if (comp.get && comp.get('type') === 'text') comp = comp.parent();
+    return comp;
+  }
+
+  var CENTER_TEXT_CLASS = 'texto-centrado';
+  var CENTER_BLOCK_CLASS = 'bloque-centrado';
+
+  function addClassToComponent(comp, className) {
+    if (!comp || !className) return;
+    var attrs = comp.get && comp.get('attributes') || {};
+    var cls = (attrs.class || attrs.className || '').trim();
+    if (cls.indexOf(className) >= 0) return;
+    cls = cls ? cls + ' ' + className : className;
+    comp.set('attributes', Object.assign({}, attrs, { class: cls }));
+    comp.set('style', Object.assign({}, comp.get && comp.get('style') && (comp.get('style').attributes || comp.get('style')) || {}, className === CENTER_TEXT_CLASS ? { 'text-align': 'center' } : { 'margin-left': 'auto', 'margin-right': 'auto', 'display': 'block' }));
+  }
+
+  function applyCenterText(comp) {
+    if (!comp) return;
+    addClassToComponent(comp, CENTER_TEXT_CLASS);
+  }
+
+  function applyCenterBlock(comp) {
+    if (!comp) return;
+    addClassToComponent(comp, CENTER_BLOCK_CLASS);
+  }
+
+  var linkPanel = document.getElementById('gjs-link-panel');
+  var linkHrefInput = document.getElementById('gjs-link-href');
+  function getLinkComponent(comp) {
+    if (!comp) return null;
+    if (comp.get && comp.get('tagName') === 'a') return comp;
+    var comps = comp.get && comp.get('components');
+    if (comps) {
+      for (var i = 0; i < comps.length; i++) {
+        var c = getLinkComponent(comps.at(i));
+        if (c) return c;
+      }
+    }
+    return null;
+  }
+  if (linkPanel && linkHrefInput) {
+    editor.on('component:selected', function(comp) {
+      var link = comp && (comp.get && comp.get('tagName') === 'a' ? comp : getLinkComponent(comp));
+      if (link) {
+        linkPanel.style.display = 'block';
+        linkHrefInput.value = link.get('attributes').href || '';
+        linkHrefInput._linkComp = link;
+      } else {
+        linkPanel.style.display = 'none';
+        linkHrefInput._linkComp = null;
+      }
+    });
+    editor.on('component:deselected', function() {
+      linkPanel.style.display = 'none';
+      linkHrefInput._linkComp = null;
+    });
+    linkHrefInput.addEventListener('input', function() {
+      if (linkHrefInput._linkComp) {
+        var attrs = Object.assign({}, linkHrefInput._linkComp.get('attributes') || {});
+        attrs.href = linkHrefInput.value.trim() || '#';
+        linkHrefInput._linkComp.set('attributes', attrs);
+      }
+    });
+  }
+
+  var btnCentrarTexto = document.getElementById('btn-centrar-texto');
+  var btnCentrarBloque = document.getElementById('btn-centrar-bloque');
+  if (btnCentrarTexto) {
+    btnCentrarTexto.addEventListener('click', function() {
+      var sel = getTargetComponent(editor.getSelected());
+      if (!sel) {
+        alert('Primero seleccioná un elemento en la página: hacé clic en el título, párrafo o texto que quieras centrar.');
+        return;
+      }
+      applyCenterText(sel);
+    });
+  }
+  if (btnCentrarBloque) {
+    btnCentrarBloque.addEventListener('click', function() {
+      var sel = getTargetComponent(editor.getSelected());
+      if (!sel) {
+        alert('Primero seleccioná un elemento en la página: hacé clic en la imagen o bloque que quieras centrar.');
+        return;
+      }
+      applyCenterBlock(sel);
+    });
+  }
+});
+</script>
+{% endblock %}

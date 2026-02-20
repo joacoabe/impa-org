@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-iglesia-sitio{% endblock %}
+
+{% block content %}
+<article class="iglesia-sitio">
+    {% if messages %}
+    <ul class="iglesia-sitio__messages" aria-live="polite">
+        {% for message in messages %}
+        <li class="iglesia-sitio__message iglesia-sitio__message--{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <header>
+        <nav class="iglesia-sitio__breadcrumb" aria-label="Navegación">
+            <a href="/iglesias/">Iglesias</a>
+            <span aria-hidden="true"> / </span>
+            <a href="{% pageurl iglesia %}">{{ iglesia.title }}</a>
+            <span aria-hidden="true"> / </span>
+            <span>Sitio</span>
+        </nav>
+        <h1>Sitio de {{ iglesia.title }}</h1>
+        {% if can_edit %}
+        <p class="iglesia-sitio__actions">
+            <a href="{% url 'home:iglesia_sitio_editar' slug=iglesia.slug %}" class="button">Editar esta página</a>
+        </p>
+        {% endif %}
+    </header>
+
+    <section class="iglesia-sitio__body">
+        {% if content and content.body %}
+            <div class="rich-text iglesia-sitio__html">{{ content.body|safe }}</div>
+        {% else %}
+            <p class="iglesia-sitio__empty">Esta iglesia aún no tiene contenido en su sitio.{% if can_edit %} <a href="{% url 'home:iglesia_sitio_editar' slug=iglesia.slug %}">Agregar contenido</a>{% endif %}</p>
+        {% endif %}
+    </section>
+</article>
+{% endblock %}

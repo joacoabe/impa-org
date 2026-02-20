@@ -7,16 +7,19 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY debe estar definido en producción (archivo .env)")
 
-# Hosts permitidos: dominio público + con puerto (por si el proxy reenvía Host: imparg.org:443)
+# Hosts permitidos: dominio público + IP del servidor (por si entran por IP) + con puerto
 _default_hosts = (
     "imparg.org,www.imparg.org,"
     "imparg.org:443,www.imparg.org:443,"
-    "localhost,127.0.0.1,192.168.1.51,"
-    "localhost:5010,127.0.0.1:5010,192.168.1.51:5010"
+    "localhost,127.0.0.1,192.168.1.51,179.43.113.10,"
+    "localhost:5010,127.0.0.1:5010,192.168.1.51:5010,179.43.113.10:5010"
 )
-ALLOWED_HOSTS = [
+_allowed = [
     h.strip() for h in os.environ.get("ALLOWED_HOSTS", _default_hosts).split(",") if h.strip()
 ]
+# Asegurar que la IP del servidor esté siempre (por si ALLOWED_HOSTS en .env no la incluye)
+_extra = ["179.43.113.10", "179.43.113.10:5010"]
+ALLOWED_HOSTS = list(dict.fromkeys(_allowed + [e for e in _extra if e not in _allowed]))
 
 # URL del sitio en producción
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "https://imparg.org")

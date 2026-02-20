@@ -1,0 +1,82 @@
+{% extends "wagtailadmin/admin_base.html" %}
+{% load i18n wagtailadmin_tags %}
+{% block titletag %}{% trans "Sign in" %}{% endblock %}
+{% block bodyclass %}login{% endblock %}
+
+{% block furniture %}
+    <main class="content-wrapper" id="main">
+        <h1>{% block branding_login %}{% trans "Sign in to Wagtail" %}{% endblock %}</h1>
+
+        <div class="messages" role="status">
+            {% if messages or form.errors %}
+                <ul>
+                    {% if form.errors %}
+                        {% for error in form.non_field_errors %}
+                            <li class="error">{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        {% block above_login %}
+            <div class="help-block help-info" style="margin-bottom: 1.5em; padding: 0.75em 1em; background: #e8f4fc; border-left: 4px solid #007d7e;">
+                <strong>¿Querés editar el sitio de una iglesia?</strong><br>
+                Este formulario es solo para el <strong>panel de administración</strong> (contenido general del sitio).<br>
+                Para editar la página propia de cada iglesia usá tu usuario y contraseña de la <strong>intranet</strong> acá:<br>
+                <a href="{% url 'home:auth_intranet' %}">Iniciar sesión con Intranet →</a>
+            </div>
+        {% endblock %}
+
+        <form class="login-form" action="{% url 'wagtailadmin_login' %}" method="post" autocomplete="off" novalidate>
+            {% block login_form %}
+                {% csrf_token %}
+
+                {% url 'wagtailadmin_home' as home_url %}
+                <input type="hidden" name="next" value="{{ next|default:home_url }}" />
+
+                {% block fields %}
+                    {% formattedfield form.username %}
+                    {% formattedfield form.password %}
+
+                    {% if show_password_reset %}
+                        <a class="reset-password" href="{% url 'wagtailadmin_password_reset' %}">{% trans "Forgotten password?" %}</a>
+                    {% endif %}
+
+                    {% block extra_fields %}
+                        {% for field_name, field in form.extra_fields %}
+                            {% formattedfield field %}
+                        {% endfor %}
+                    {% endblock extra_fields %}
+
+                    {% include "wagtailadmin/shared/forms/single_checkbox.html" with label_classname="remember-me" name="remember" text=_("Remember me") %}
+                {% endblock %}
+            {% endblock %}
+            <footer class="form-actions">
+                {% block submit_buttons %}
+                    <button
+                        type="submit"
+                        class="button button-longrunning"
+                        data-controller="w-progress"
+                        data-action="w-progress#activate"
+                        data-w-progress-active-value="{% trans 'Signing in…' %}"
+                    >
+                        {% icon name="spinner" %}
+                        <em data-w-progress-target="label">{% trans 'Sign in' %}</em>
+                    </button>
+                {% endblock %}
+            </footer>
+        </form>
+
+        {% block below_login %}{% endblock %}
+
+        {% block branding_logo %}
+            <div class="login-logo">
+                {% include "wagtailadmin/logo.html" with wordmark="True" %}
+            </div>
+        {% endblock %}
+    </main>
+{% endblock %}

@@ -12,7 +12,7 @@ Por cada iglesia en la respuesta:
   - Si existe una IglesiaPage con el mismo intranet_id, se actualiza.
   - Si no, se crea una nueva como hija de la página "Iglesias".
 
-Formato esperado de la API: {"data": [{"id", "name", "latitude", "longitude", "province", "address", "pastor", "pastora"}, ...]}
+Formato esperado de la API: {"data": [{"id", "name", "latitude", "longitude", "province", "address", "city", "pastor", "pastora"}, ...]}
 """
 import os
 import re
@@ -119,6 +119,7 @@ class Command(BaseCommand):
             lon = item.get("longitude")
             province = (item.get("province") or "").strip() or ""
             address = (item.get("address") or "").strip() or ""
+            city = (item.get("city") or item.get("ciudad") or "").strip() or ""
             pastor = format_pastor(item.get("pastor"))
             pastora = format_pastor(item.get("pastora"))
             pastor_text = " / ".join(filter(None, [pastor, pastora])) if (pastor or pastora) else ""
@@ -138,6 +139,7 @@ class Command(BaseCommand):
                 page.nombre = name
                 page.provincia = province
                 page.direccion = address
+                page.ciudad = city
                 page.pastor_nombre = pastor_text
                 if lat is not None and lon is not None:
                     page.latitud = Decimal(str(lat))
@@ -154,6 +156,7 @@ class Command(BaseCommand):
                     intranet_id=intranet_id,
                     provincia=province,
                     direccion=address,
+                    ciudad=city,
                     pastor_nombre=pastor_text,
                 )
                 if lat is not None and lon is not None:

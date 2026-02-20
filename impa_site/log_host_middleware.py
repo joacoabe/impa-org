@@ -1,4 +1,4 @@
-"""Middleware: corrige Host duplicado y fuerza HTTPS para imparg.org (evita Mixed Content)."""
+"""Middleware: corrige Host duplicado, fuerza HTTPS y evita 403 por Referer faltante."""
 
 
 class LogHostMiddleware:
@@ -22,4 +22,9 @@ class LogHostMiddleware:
             host_clean = host.split(":")[0].lower()
             if host_clean in ("imparg.org", "www.imparg.org"):
                 request.META["HTTP_X_FORWARDED_PROTO"] = "https"
+        # Si no hay Referer pero el Host es nuestro, añadimos Referer para que CSRF no devuelva 403
+        # (p. ej. al abrir el sitio desde un enlace externo o por IP que no envía Referer)
+        if not request.META.get("HTTP_REFERER") and host:
+            scheme = "https" if request.META.get("HTTP_X_FORWARDED_PROTO") == "https" else request.scheme
+            request.META["HTTP_REFERER"] = f"{scheme}://{host}/"
         return self.get_response(request)

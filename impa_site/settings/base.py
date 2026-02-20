@@ -93,6 +93,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "home.context_processors.site_menu",
+                "home.context_processors.intranet_user",
             ],
         },
     },
@@ -218,6 +219,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.imparg.org",
     "http://localhost:5010",
     "http://127.0.0.1:5010",
+    "http://179.43.113.10",
+    "https://179.43.113.10",
 ]
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
@@ -230,3 +233,6 @@ WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "http://localhos
 # if untrusted users are allowed to upload files -
 # see https://docs.wagtail.org/en/stable/advanced_topics/deploying.html#user-uploaded-files
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
+
+# Intranet: base URL para llamar a la API (GET /api/v1/public/me). Sin barra final.
+INTRANET_API_BASE_URL = os.environ.get("INTRANET_API_BASE_URL", "").rstrip("/") or os.environ.get("INTRANET_URL", "").rstrip("/")

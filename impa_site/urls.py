@@ -14,6 +14,8 @@ urlpatterns = [
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),
+    # Páginas sitio de iglesias y auth intranet (antes de Wagtail para que /iglesias/<slug>/sitio/ no sea capturado por Wagtail)
+    path("", include("home.urls")),
 ]
 
 if settings.DEBUG:
