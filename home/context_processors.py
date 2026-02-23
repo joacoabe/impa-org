@@ -5,7 +5,10 @@ from home.intranet_auth import get_intranet_user
 
 
 # Slugs que aparecen como tabs bajo el header (orden fijo)
-TAB_SLUGS = ["iglesias", "noticias", "recursos", "radios", "contacto", "mapa"]
+TAB_SLUGS = ["iglesias", "noticias", "radios", "contacto", "mapa"]
+
+# Slugs que no se muestran en ningún menú (p. ej. Recursos oculto por ahora)
+NAV_HIDE_SLUGS = ["recursos"]
 
 
 def site_menu(request):
@@ -18,9 +21,10 @@ def site_menu(request):
         by_slug = {c.slug: c for c in children}
         # Tabs: solo estas páginas, en el orden definido
         site_tabs = [by_slug[s] for s in TAB_SLUGS if s in by_slug]
-        # Nav del header: el resto (Historia, Visión, Doctrina, Autoridades, etc.)
+        # Nav del header: el resto, salvo los ocultos (Historia, Visión, Doctrina, Autoridades, etc.)
         tab_slugs_set = set(TAB_SLUGS)
-        site_nav = [c for c in children if c.slug not in tab_slugs_set]
+        hide_slugs_set = set(NAV_HIDE_SLUGS)
+        site_nav = [c for c in children if c.slug not in tab_slugs_set and c.slug not in hide_slugs_set]
         return {"site_menu": children, "site_nav": site_nav, "site_tabs": site_tabs}
     except Exception:
         return {"site_menu": [], "site_nav": [], "site_tabs": []}
