@@ -14,15 +14,22 @@
 
     {% if stream_radios %}
     <section class="radios-list stream-radios">
-        <h2>Radios en vivo</h2>
-        <ul>
+        <h2 class="radios-section-title">Radios en vivo</h2>
+        <ul class="radio-cards">
             {% for r in stream_radios %}
-            <li class="radio-stream-item">
-                <strong>{{ r.nombre_display }}</strong>
-                <span class="radio-meta">{% if r.currently_playing %} — {{ r.currently_playing }}{% endif %}</span>
-                <div class="radio-links">
-                    <a href="{{ r.stream_url }}" target="_blank" rel="noopener">Escuchar MP3</a>
-                    <a href="{{ r.stream_url }}.m3u" target="_blank" rel="noopener">M3U</a>
+            <li class="radio-card">
+                <div class="radio-card__header">
+                    <span class="radio-card__name">{{ r.nombre_display }}</span>
+                    {% if r.currently_playing %}
+                    <span class="radio-card__now">En vivo: {{ r.currently_playing }}</span>
+                    {% endif %}
+                </div>
+                <div class="radio-card__player">
+                    <audio controls preload="none" class="radio-card__audio">
+                        <source src="{{ r.stream_url }}" type="audio/mpeg">
+                        Tu navegador no soporta el elemento de audio. <a href="{{ r.stream_url }}" target="_blank" rel="noopener">Abrir enlace directo</a>.
+                    </audio>
+                    <a href="{{ r.stream_url }}.m3u" target="_blank" rel="noopener" class="radio-card__m3u" title="Descargar lista M3U">M3U</a>
                 </div>
             </li>
             {% endfor %}

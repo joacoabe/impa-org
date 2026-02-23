@@ -190,14 +190,30 @@ body {
 .home-carousel__slide {
   flex: 0 0 100%;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--impa-gray-900);
 }
 
-.home-carousel__img {
+/* Marco con proporción fija: la imagen se ve completa dentro (sin recortar) */
+.home-carousel__frame {
   width: 100%;
-  height: auto;
-  display: block;
-  aspect-ratio: 1400 / 550;
-  object-fit: cover;
+  aspect-ratio: 1200 / 700;
+  max-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.home-carousel__frame .home-carousel__img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center;
 }
 
 .home-carousel__btn {
@@ -491,6 +507,80 @@ button.button--secondary:hover {
   margin: 1.5rem 0 0.5rem;
 }
 
+/* Doctrina — Artículos de Fe: aspecto profesional y legible */
+.template-institutional-doctrina .institutional {
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.template-institutional-doctrina .institutional header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--impa-gray-900);
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+}
+.template-institutional-doctrina .institutional-body {
+  line-height: 1.75;
+  color: var(--impa-gray-700);
+}
+
+/* Cada punto (UNO, DOS, … DOCE) como bloque destacado de Artículo de Fe */
+.doctrina-articulo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--impa-teal-dark);
+  margin: 2.5rem 0 1rem;
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--impa-teal);
+  border-left: 8px solid var(--impa-teal);
+  border-radius: 0 6px 6px 0;
+  background: var(--impa-gray-100);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15);
+}
+
+/* Número del artículo en círculo teal (siempre visible, viene del HTML) */
+.doctrina-articulo-numero {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--impa-white);
+  background: var(--impa-teal);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.doctrina-articulo-nombre {
+  flex: 1;
+}
+
+.institutional-body--doctrina .doctrina-articulo-titulo:first-child {
+  margin-top: 0;
+}
+.template-institutional-doctrina .institutional-body .block-paragraph {
+  margin-bottom: 1rem;
+  padding-left: 0.25rem;
+}
+.template-institutional-doctrina .institutional-body .block-paragraph p {
+  margin: 0 0 0.75rem;
+}
+.template-institutional-doctrina .institutional-body .block-paragraph:last-child {
+  margin-bottom: 0;
+}
+.template-institutional-doctrina .institutional-body strong {
+  color: var(--impa-gray-900);
+}
+
 /* Secciones / listados */
 .home-children,
 .iglesias-list,
@@ -527,6 +617,98 @@ button.button--secondary:hover {
 .recursos-grid li,
 .radios-list li {
   margin-bottom: 0.5rem;
+}
+
+/* Radios en vivo — cards */
+.stream-radios .radios-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--impa-gray-900);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--impa-teal);
+  display: inline-block;
+}
+
+.radio-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.radio-cards .radio-card {
+  margin-bottom: 0;
+}
+
+.radio-card {
+  background: var(--impa-white);
+  border: 1px solid var(--impa-gray-300);
+  border-radius: var(--impa-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.radio-card:hover {
+  border-color: var(--impa-gray-500);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.radio-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.radio-card__name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--impa-gray-900);
+}
+
+.radio-card__now {
+  font-size: 0.875rem;
+  color: var(--impa-gray-500);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radio-card__player {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.radio-card__audio {
+  flex: 1 1 280px;
+  min-width: 0;
+  height: 40px;
+  border-radius: var(--impa-radius);
+}
+
+.radio-card__audio::-webkit-media-controls-panel {
+  background: var(--impa-gray-100);
+}
+
+.radio-card__m3u {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--impa-teal);
+  text-decoration: none;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--impa-teal);
+  border-radius: var(--impa-radius);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.radio-card__m3u:hover {
+  background: var(--impa-teal);
+  color: var(--impa-white);
 }
 
 .iglesias-grid .ciudad,

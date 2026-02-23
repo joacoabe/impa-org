@@ -14,7 +14,9 @@
       {% for block in carousel_blocks %}
       {% if block.value %}
       <div class="home-carousel__slide">
-        {% image block.value fill-1400x550 class="home-carousel__img" %}
+        <div class="home-carousel__frame">
+          {% image block.value max-1200x700 class="home-carousel__img" style="object-fit:contain;max-width:100%;max-height:100%;width:auto;height:auto;display:block;margin:0 auto;" %}
+        </div>
       </div>
       {% endif %}
       {% endfor %}

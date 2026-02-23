@@ -22,6 +22,24 @@ def can_edit_iglesia_site(context):
     return can_edit_church_site(page, user)
 
 
+@register.simple_tag
+def doctrina_articulo_num(stream_value, block_index):
+    """
+    Para la página Doctrina: devuelve el número de artículo (1-12) en la posición block_index.
+    Cuenta solo bloques de tipo 'heading' hasta esa posición.
+    Uso: {% doctrina_articulo_num page.body forloop.counter0 as num %}
+    """
+    if not stream_value or block_index is None:
+        return 1
+    n = 0
+    for i, block in enumerate(stream_value):
+        if i > block_index:
+            break
+        if getattr(block, "block_type", None) == "heading":
+            n += 1
+    return n if n else 1
+
+
 @register.filter
 def path_startswith(path, prefix):
     """True si path es igual a prefix o es una subruta (path empieza con prefix/)."""

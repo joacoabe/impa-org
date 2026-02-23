@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags home_tags %}
 
 {% block body_class %}template-institutional template-institutional-{{ page.tipo }}{% endblock %}
 
@@ -33,9 +33,16 @@
     {% endif %}
 
     {% if page.body %}
-    <div class="institutional-body">
+    <div class="institutional-body {% if page.tipo == 'doctrina' %}institutional-body--doctrina{% endif %}">
         {% for block in page.body %}
-            {% include_block block %}
+            {% if page.tipo == 'doctrina' and block.block_type == 'heading' %}
+                <div class="doctrina-articulo-titulo" style="display:flex;align-items:center;gap:1rem;margin:{% if forloop.first %}0 0 1rem{% else %}2.5rem 0 1rem{% endif %};padding:1rem 1.5rem;border:2px solid #0d9488;border-left:8px solid #0d9488;border-radius:0 6px 6px 0;background:#f1f5f9;box-shadow:0 2px 8px rgba(13,148,136,0.2);">
+                    <span class="doctrina-articulo-numero" style="flex-shrink:0;width:2.25rem;height:2.25rem;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;background:#0d9488;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.2);">{% doctrina_articulo_num page.body forloop.counter0 %}</span>
+                    <span class="doctrina-articulo-nombre" style="font-size:1.35rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#0f766e;">{{ block.value }}</span>
+                </div>
+            {% else %}
+                {% include_block block %}
+            {% endif %}
         {% endfor %}
     </div>
     {% endif %}
