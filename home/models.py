@@ -1,3 +1,5 @@
+import unicodedata
+
 from django.db import models
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
@@ -90,6 +92,28 @@ class InstitutionalPage(Page):
 
 
 # ---------- Fase 3: Iglesias ----------
+# Variantes de nombre de provincia → nombre canónico (para unificar ej. "Rio Negro" y "Río Negro")
+# Claves: nombre normalizado (sin acentos, minúsculas) para lookup
+PROVINCIA_CANONICA = {
+    "rio negro": "Río Negro",
+    "cordoba": "Córdoba",
+    "tucuman": "Tucumán",
+    "san juan": "San Juan",
+    "san luis": "San Luis",
+    "entre rios": "Entre Ríos",
+    "la rioja": "La Rioja",
+}
+
+
+def _nombre_canonico_provincia(raw: str) -> str:
+    """Devuelve el nombre canónico de provincia para agrupar y mostrar."""
+    if not (raw := (raw or "").strip()):
+        return "Sin provincia"
+    key = raw.lower()
+    key_ascii = unicodedata.normalize("NFD", key).encode("ascii", "ignore").decode("ascii")
+    return PROVINCIA_CANONICA.get(key_ascii, raw)
+
+
 class IglesiasIndexPage(Page):
     intro = RichTextField(blank=True)
 
@@ -108,7 +132,8 @@ class IglesiasIndexPage(Page):
         children = list(self.live_children().specific())
         by_provincia = {}
         for iglesia in children:
-            prov = (iglesia.provincia or "").strip() or "Sin provincia"
+            raw = (iglesia.provincia or "").strip() or "Sin provincia"
+            prov = _nombre_canonico_provincia(raw) if raw != "Sin provincia" else raw
             by_provincia.setdefault(prov, []).append(iglesia)
         # Ordenar provincias por nombre; dentro de cada una, iglesias por título
         for prov in by_provincia:
