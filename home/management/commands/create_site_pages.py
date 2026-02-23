@@ -21,8 +21,32 @@ from home.models import (
     RecursosIndexPage,
     RadiosIndexPage,
     ContactoPage,
+    FormField,
     MapaPage,
 )
+
+
+# Campos del formulario de contacto (todos opcionales)
+CONTACTO_FORM_FIELDS = [
+    ("Nombre", "singleline"),
+    ("Apellido", "singleline"),
+    ("Correo electrónico", "email"),
+    ("Mensaje", "multiline"),
+]
+
+
+def _ensure_contacto_form_fields(contacto_page):
+    """Crea los campos del formulario de contacto si no existen."""
+    if contacto_page.form_fields.exists():
+        return
+    for i, (label, field_type) in enumerate(CONTACTO_FORM_FIELDS):
+        FormField.objects.create(
+            page=contacto_page,
+            label=label,
+            field_type=field_type,
+            required=False,
+            sort_order=i,
+        )
 
 
 # (slug, título, clase del modelo)
@@ -64,6 +88,8 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.SUCCESS(f"  Publicada: {title} (/{slug}/)"))
                 else:
                     self.stdout.write(f"  Ya existe: {title} (/{slug}/)")
+                if model_class == ContactoPage:
+                    _ensure_contacto_form_fields(child.specific)
                 continue
             page = model_class(title=title)
             if hasattr(page, "intro"):
@@ -72,6 +98,8 @@ class Command(BaseCommand):
                 page.body = []
             root.add_child(instance=page)
             page.save_revision().publish()
+            if model_class == ContactoPage:
+                _ensure_contacto_form_fields(page.specific)
             created += 1
             self.stdout.write(self.style.SUCCESS(f"  Creada y publicada: {title} (/{slug}/)"))
 
