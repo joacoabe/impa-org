@@ -199,6 +199,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
 
 WAGTAIL_SITE_NAME = "IMPA"
 
+# Permitir slugs con ñ y acentos (ej. /iglesias/añelo/, /iglesias/neuquén-hipódromo/)
+WAGTAIL_ALLOW_UNICODE_SLUGS = True
+
 # Login por nombre de usuario (no por correo). Los usuarios se identifican en el admin por username.
 WAGTAILADMIN_USER_LOGIN_FORM = "home.forms.UsernameLoginForm"
 
