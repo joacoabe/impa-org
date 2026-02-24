@@ -581,6 +581,13 @@ button.button--secondary:hover {
   color: var(--impa-gray-900);
 }
 
+/* Autoridades — separación entre cada obispo */
+.autoridades-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
 /* Secciones / listados */
 .home-children,
 .iglesias-list,
