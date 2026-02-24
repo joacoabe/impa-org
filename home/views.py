@@ -6,6 +6,7 @@ Vistas para el sitio imparg.org (Django).
 """
 import os
 import re
+import unicodedata
 import uuid
 from types import SimpleNamespace
 from django.shortcuts import render, redirect
@@ -43,12 +44,23 @@ def entrar(request):
     return render(request, "home/entrar.html", context)
 
 
+def _slug_ascii_fallback(slug):
+    """Devuelve versión del slug sin acentos (para buscar páginas creadas con slugify antiguo)."""
+    nfd = unicodedata.normalize("NFD", slug)
+    return "".join(c for c in nfd if unicodedata.category(c) != "Mn").lower()
+
+
 def _get_iglesia_by_slug(slug):
     """Devuelve la IglesiaPage viva con slug dado (hija del índice iglesias) o None."""
+    slug = unicodedata.normalize("NFC", slug)
     index = IglesiasIndexPage.objects.live().first()
     if not index:
         return None
     child = Page.objects.child_of(index).filter(slug=slug).live().first()
+    if not child:
+        slug_ascii = _slug_ascii_fallback(slug)
+        if slug_ascii != slug:
+            child = Page.objects.child_of(index).filter(slug=slug_ascii).live().first()
     if not child:
         return None
     return child.specific

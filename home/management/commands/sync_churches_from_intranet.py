@@ -16,6 +16,7 @@ Formato esperado de la API: {"data": [{"id", "name", "latitude", "longitude", "p
 """
 import os
 import re
+import unicodedata
 from decimal import Decimal
 
 from django.conf import settings
@@ -26,8 +27,10 @@ from home.models import IglesiasIndexPage, IglesiaPage
 
 
 def slugify_unique(base_slug, existing_slugs):
-    """Devuelve base_slug o base_slug-N para que sea único."""
-    slug = re.sub(r"[^\w\s-]", "", base_slug).strip().lower()
+    """Devuelve base_slug o base_slug-N para que sea único. Preserva ñ y acentos."""
+    base_slug = unicodedata.normalize("NFC", base_slug)
+    # Mantener letras (incl. ñ y acentos), dígitos, espacios y guiones (re.UNICODE para ñ/acentos)
+    slug = re.sub(r"[^\w\s-]", "", base_slug, flags=re.UNICODE).strip().lower()
     slug = re.sub(r"[-\s]+", "-", slug) or "iglesia"
     if slug not in existing_slugs:
         return slug
