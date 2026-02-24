@@ -1,6 +1,6 @@
 """
 Asigna las fotos de obispos (por nombre de archivo/título) a las autoridades
-Mardones y Ojeda, y las quita del carrusel de la Home si estaban ahí.
+(Mardones, Ojeda, Alvarez, etc.) y las quita del carrusel de la Home si estaban.
 
 Uso:
   python manage.py assign_obispos_fotos
@@ -11,6 +11,13 @@ from wagtail.models import Page
 
 from home.models import HomePage, Autoridad
 
+# (patrón en título de imagen, patrón en nombre de Autoridad)
+OBISPOS_A_ASIGNAR = [
+    ("mardones", "Mardones"),
+    ("ojeda", "Ojeda"),
+    ("alvarez", "Alvarez"),
+]
+
 
 def find_image_by_title_pattern(ImageModel, pattern):
     """Devuelve la primera imagen cuyo título contenga pattern (case-insensitive)."""
@@ -19,38 +26,21 @@ def find_image_by_title_pattern(ImageModel, pattern):
 
 def main(command):
     Image = get_image_model()
-
-    # Buscar imágenes por título (Wagtail suele poner el nombre del archivo sin extensión)
-    img_mardones = find_image_by_title_pattern(Image, "mardones")
-    img_ojeda = find_image_by_title_pattern(Image, "ojeda")
-
-    if not img_mardones:
-        command.stderr.write(command.style.WARNING('No se encontró ninguna imagen con "mardones" en el título.'))
-    if not img_ojeda:
-        command.stderr.write(command.style.WARNING('No se encontró ninguna imagen con "ojeda" en el título.'))
-
-    # Autoridades por nombre (Mardones = actual, Ojeda = anterior)
-    aut_mardones = Autoridad.objects.filter(nombre__icontains="Mardones").first()
-    aut_ojeda = Autoridad.objects.filter(nombre__icontains="Ojeda").first()
-
-    if not aut_mardones:
-        command.stderr.write(command.style.ERROR('No se encontró autoridad con "Mardones" (ej. Gustavo Mardones Zapata).'))
-    if not aut_ojeda:
-        command.stderr.write(command.style.ERROR('No se encontró autoridad con "Ojeda" (ej. Germán Ojeda Arteaga).'))
-
     ids_to_remove_from_carousel = []
 
-    if img_mardones and aut_mardones:
-        aut_mardones.foto = img_mardones
-        aut_mardones.save()
-        command.stdout.write(command.style.SUCCESS(f"  Foto asignada a {aut_mardones.nombre}."))
-        ids_to_remove_from_carousel.append(img_mardones.id)
-
-    if img_ojeda and aut_ojeda:
-        aut_ojeda.foto = img_ojeda
-        aut_ojeda.save()
-        command.stdout.write(command.style.SUCCESS(f"  Foto asignada a {aut_ojeda.nombre}."))
-        ids_to_remove_from_carousel.append(img_ojeda.id)
+    for img_pattern, nom_pattern in OBISPOS_A_ASIGNAR:
+        img = find_image_by_title_pattern(Image, img_pattern)
+        aut = Autoridad.objects.filter(nombre__icontains=nom_pattern).first()
+        if not img:
+            command.stderr.write(command.style.WARNING(f'No se encontró imagen con "{img_pattern}" en el título.'))
+            continue
+        if not aut:
+            command.stderr.write(command.style.ERROR(f'No se encontró autoridad con "{nom_pattern}" en el nombre.'))
+            continue
+        aut.foto = img
+        aut.save()
+        command.stdout.write(command.style.SUCCESS(f"  Foto asignada a {aut.nombre}."))
+        ids_to_remove_from_carousel.append(img.id)
 
     # Quitar estas imágenes del carrusel de la Home si están
     root = Page.objects.type(HomePage).filter(depth=2).first()
@@ -80,7 +70,7 @@ def main(command):
 
 
 class Command(BaseCommand):
-    help = "Asigna fotos de obispos (mardones, ojeda) a Autoridades y las quita del carrusel si estaban."
+    help = "Asigna fotos de obispos (mardones, ojeda, alvarez, etc.) a Autoridades y las quita del carrusel si estaban."
 
     def handle(self, *args, **options):
         main(self)
