@@ -13,6 +13,7 @@
     <div class="autoridades-list">
         {% for aut in autoridades %}
         <section class="autoridad {% if forloop.first %}autoridad--actual{% endif %}">
+            {% if not forloop.first %}<hr class="autoridad__separador" aria-hidden="true" />{% endif %}
             <div class="autoridad__foto">
                 {% if aut.foto %}
                     {% image aut.foto max-200x300 as img %}

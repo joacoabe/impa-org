@@ -588,6 +588,12 @@ button.button--secondary:hover {
   gap: 3.5rem;
 }
 
+.autoridad__separador {
+  margin: 0 0 1.5rem 0;
+  border: none;
+  border-top: 1px solid var(--impa-gray-300);
+}
+
 /* Secciones / listados */
 .home-children,
 .iglesias-list,
