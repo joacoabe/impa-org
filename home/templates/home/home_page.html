@@ -38,6 +38,8 @@
         <a href="{% pageurl noticia %}" class="home-noticias__link">
           {% if noticia.imagen_destacada %}
           <span class="home-noticias__thumb">{% image noticia.imagen_destacada fill-400x220 class="home-noticias__img" %}</span>
+          {% elif noticia.get_imagen_listing_url %}
+          <span class="home-noticias__thumb"><img src="{{ noticia.get_imagen_listing_url }}" alt="{{ noticia.title }}" class="home-noticias__img"></span>
           {% else %}
           <span class="home-noticias__thumb home-noticias__thumb--placeholder"><span class="home-noticias__placeholder">Sin imagen</span></span>
           {% endif %}

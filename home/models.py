@@ -1,7 +1,9 @@
+import re
 import unicodedata
 
 from django.db import models
 from wagtail import blocks
+from wagtail.rich_text import expand_db_html
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
@@ -234,6 +236,11 @@ class NoticiaPage(Page):
     autor = models.CharField(max_length=255, blank=True)
     intro = RichTextField(blank=True)
     body = RichTextField(blank=True)
+
+    # Campos para integración con Facebook (opcionales)
+    facebook_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    url_imagen_fb = models.URLField(max_length=500, null=True, blank=True)
+
     imagen_destacada = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -252,6 +259,53 @@ class NoticiaPage(Page):
 
     parent_page_types = ["home.NoticiasIndexPage"]
     subpage_types = []
+
+    def _extraer_primera_imagen_url(self, html_string):
+        """Extrae la primera URL de imagen de un HTML (src o data-src)."""
+        if not html_string or not isinstance(html_string, str):
+            return None
+        # src="..." o src='...' (permite espacios y newlines)
+        match = re.search(
+            r'<img[^>]+?\s+src\s*=\s*["\']([^"\']+)["\']',
+            html_string,
+            re.I | re.DOTALL,
+        )
+        if match:
+            return match.group(1).strip()
+        match = re.search(
+            r'<img[^>]+?\s+data-src\s*=\s*["\']([^"\']+)["\']',
+            html_string,
+            re.I | re.DOTALL,
+        )
+        if match:
+            return match.group(1).strip()
+        return None
+
+    def get_imagen_listing_url(self):
+        """
+        URL de imagen para listados (home, índice): imagen_destacada se usa vía
+        el tag {% image %}; para thumbnail usar url_imagen_fb o la primera
+        imagen embebida en body/intro (p. ej. la que trae el RSS).
+        """
+        if self.url_imagen_fb:
+            return self.url_imagen_fb
+        for field in (self.body, self.intro):
+            if not field:
+                continue
+            raw = getattr(field, "source", None) or str(field)
+            if not raw:
+                continue
+            try:
+                html = expand_db_html(raw)
+            except Exception:
+                html = raw
+            url = self._extraer_primera_imagen_url(html)
+            if url:
+                return url
+            url = self._extraer_primera_imagen_url(raw)
+            if url:
+                return url
+        return None
 
 
 # ---------- Fase 5: Recursos ----------

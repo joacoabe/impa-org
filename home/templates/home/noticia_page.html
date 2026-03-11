@@ -5,24 +5,20 @@
 
 {% block content %}
 <article class="noticia-detalle">
-    <header>
-        <h1>{{ page.title }}</h1>
-        <p class="meta">
-            {{ page.date|date:"d/m/Y" }}{% if page.autor %} · {{ page.autor }}{% endif %}
-        </p>
+    <header class="entry-header mb-4">
+        <h1 class="display-4">{{ page.title }}</h1>
+        <p class="text-muted meta">{{ page.date|date:"d/m/Y" }}{% if page.autor %} · Por {{ page.autor }}{% endif %}</p>
     </header>
 
     {% if page.imagen_destacada %}
-    <figure class="destacada">
-        {% image page.imagen_destacada width-800 %}
-    </figure>
+        {% image page.imagen_destacada fill-1200x600 class="img-fluid rounded mb-4" %}
     {% endif %}
 
     {% if page.intro %}
     <div class="intro rich-text">{{ page.intro|richtext }}</div>
     {% endif %}
-    {% if page.body %}
-    <div class="body rich-text">{{ page.body|richtext }}</div>
-    {% endif %}
+    <div class="entry-content body rich-text">
+        {% if page.body %}{{ page.body|richtext }}{% endif %}
+    </div>
 </article>
 {% endblock %}
